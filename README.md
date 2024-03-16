@@ -42,7 +42,7 @@ Maybe I can switch my definition of token type to an enumeration. We have a func
 that can turn a symbol into a string.
 
 With this I can just grind a function that can determine if a string is a token
-keyword or an identifier. Which will then allow the creationg of appropiate
+keyword or an identifier. Which will then allow the creations of appropriate
 token-type enum and record.
 
 #### Scanner
@@ -61,7 +61,7 @@ line number
 Will require several functions to work correctly.
 
 I just realized that there is a function called get-line. I can keep track of the
-line number with it. The only trouble would be keeping track of multiline constructs
+line number with it. The only trouble would be keeping track of multi line constructs
 with it.
 
 There is also `port-line` and `port-column`.

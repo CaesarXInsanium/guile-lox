@@ -6,6 +6,7 @@
              (ice-9 format) ;; custom printer
              (ice-9 hash-table))
 
+(define NIL '())
 ;; simple type
 (define-record-type token
   (make-token type lexeme object line)
@@ -71,7 +72,8 @@
                  (TOKEN_VAR . "TOKEN_VAR")
                  (TOKEN_WHILE . "TOKEN_WHILE")
 
-                 (TOKEN_EOF . "TOKEN_EOF")))
+                 (TOKEN_EOF . "TOKEN_EOF")
+                 (TOKEN_ERROR . "TOKEN_ERROR")))
                  
 (define token-types (alist->hash-table tokenb))                 
   
@@ -98,6 +100,12 @@
       (cdr handle)
       'TOKEN_IDENTIFIER)))
 
+(define (make-error-token port)
+  (make-token 'TOKEN_ERROR "ERROR" NIL (port-line port)))
+
+(define (make-eof-token port)
+  (make-token 'TOKEN_EOF "EOF" NIL (port-line port))) 
+
 (export token-types
         token
         make-token
@@ -106,4 +114,6 @@
         token-object
         token-line
         keywords
-        keyword?)
+        keyword?
+        make-error-token
+        make-eof-token)
