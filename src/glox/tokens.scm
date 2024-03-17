@@ -4,7 +4,8 @@
 (use-modules (srfi srfi-9)
              (srfi srfi-9 gnu)
              (ice-9 format) ;; custom printer
-             (ice-9 hash-table))
+             (ice-9 hash-table)
+             (ice-9 textual-ports))
 
 (define NIL '())
 ;; simple type
@@ -19,7 +20,7 @@
 
 (set-record-type-printer! token 
                           (lambda (record port)
-                            (display (format #f "Type: ~s,\tLexeme: ~s,\tObject: ~:a,\tLine: ~d~%"
+                            (display (format #f "Type: ~s,\tLexeme: ~s,\tObject: ~s,\tLine: ~d~%"
                                              (symbol->string (token-type record))
                                              (token-lexeme record)
                                              (token-object record) ;; will have to live with this horror
@@ -94,18 +95,29 @@
                                       ("var" . TOKEN_VAR)
                                       ("while" . TOKEN_WHILE))))
 
+;; must be a list of characters
+(define (rev-lst-str lst) (list->string (reverse lst)))
+
 (define (keyword? str)
-  (let ((handle (hash-get-handle keywords)))
+  (let ((handle (hash-get-handle keywords str)))
     (if (pair? handle)
       (cdr handle)
       'TOKEN_IDENTIFIER)))
 
 (define (make-error-token port)
+  (get-char port) ;; char needs to be consumed
   (make-token 'TOKEN_ERROR "ERROR" NIL (port-line port)))
 
 (define (make-eof-token port)
   (make-token 'TOKEN_EOF "EOF" NIL (port-line port))) 
 
+(define ())
+
+;; bang !, !=
+;; equal =, ==
+;; lt < , <=
+;; gt > , >=
+;; comment
 (export token-types
         token
         make-token
@@ -116,4 +128,5 @@
         keywords
         keyword?
         make-error-token
-        make-eof-token)
+        make-eof-token
+        rev-lst-str)

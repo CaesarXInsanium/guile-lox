@@ -66,6 +66,10 @@ with it.
 
 There is also `port-line` and `port-column`.
 
+with scan string, there is two options,
+if char is quote, then check to see if `start` and `str` are defined, if not then
+begin defining the string. if yes then begin returning the string lexeme and stuff
+
 ### Parser
 
 ### Code Generation

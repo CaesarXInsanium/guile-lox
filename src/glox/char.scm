@@ -22,10 +22,10 @@
 (define (quote-mark? char) (or (char=? #\" char) (char=? #\' char)))
 
 (define (single-char? char)
-  (cond ((char=? char #\() 'TOKEN_LEFT-PAREN)
-        ((char=? char #\)) 'TOKEN_RIGHT-PAREN)
-        ((char=? char #\{) 'TOKEN_LEFT-BRACE)
-        ((char=? char #\}) 'TOKEN_RIGHT-BRACE)
+  (cond ((char=? char #\() 'TOKEN_LEFT_PAREN)
+        ((char=? char #\)) 'TOKEN_RIGHT_PAREN)
+        ((char=? char #\{) 'TOKEN_LEFT_BRACE)
+        ((char=? char #\}) 'TOKEN_RIGHT_BRACE)
         ((char=? char #\,) 'TOKEN_COMMA)
         ((char=? char #\.) 'TOKEN_DOT)
         ((char=? char #\-) 'TOKEN_MINUS)
@@ -33,6 +33,8 @@
         ((char=? char #\;) 'TOKEN_SEMICOLON)
         ((char=? char #\*) 'TOKEN_STAR)
         (else #f)))
+
+(define (char->string char) (list->string (list char)))
 
 (export whitespace?
         digit?

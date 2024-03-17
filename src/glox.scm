@@ -30,6 +30,6 @@
   (newline)
   (if (< 1 (length args))
     (run-file (list-ref args 1))
-    (run (get-string-all (get-line STDIN)))))
+    (run (open-input-string (get-line STDIN)))))
 
 (export glox-main)
