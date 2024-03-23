@@ -1,7 +1,12 @@
 (define-module (glox char))
 (define NIL '())
 
-(define whitespace? char-whitespace?)
+(define whitespace? 
+  (lambda (char)
+    (or (char=? char #\newline)
+        (char=? char #\tab)
+        (char=? char #\space))))
+                      
 
 (define (alpha? char)
   (or (or (and (char>=? char #\a) 
@@ -34,7 +39,20 @@
         ((char=? char #\*) 'TOKEN_STAR)
         (else #f)))
 
-(define (char->string char) (list->string (list char)))
+(define (char->string . char) (list->string char))
+
+;; double tokens
+(define (bang? a) (char=? #\! a))
+(define (eql? a) (char=? #\= a))
+(define (cmp? a) (or (char=? #\< a) (char=? #\> a)))
+(define (comment? a b) (and (char=? #\/ a) (char=? #\/ b)))
+(define (slash? a) (char=? #\/ a))
+
+(define (double? char)
+  (or (bang? char)
+      (eql? char)
+      (cmp? char)
+      (slash? char)))
 
 (export whitespace?
         digit?
@@ -42,4 +60,12 @@
         alpha-numeric?
         alpha-symbol?
         quote-mark?
-        single-char?)
+        single-char?
+        char->string
+        bang?
+        eql?
+        cmp?
+        comment?
+        slash?
+        double?)
+        

@@ -20,18 +20,18 @@
 
 (set-record-type-printer! token 
                           (lambda (record port)
-                            (display (format #f "Type: ~s,\tLexeme: ~s,\tObject: ~s,\tLine: ~d~%"
+                            (display (format #f "Type: ~s, Lexeme: ~s, Object: ~s, Line: ~d~%"
                                              (symbol->string (token-type record))
                                              (token-lexeme record)
                                              (token-object record) ;; will have to live with this horror
                                              (token-line record))
                                      port)))
 
-;; alist defining the token TYPES
+;; alist defining the token TYPE
 (define tokenb '((TOKEN_LEFT_PAREN . "TOKEN_LEFT_PAREN")
                  (TOKEN_RIGHT_PAREN . "TOKEN_RIGHT_PAREN")
                  (TOKEN_LEFT_BRACE . "TOKEN_LEFT_BRACE")
-                 (TOKEN_RIGHT_BRACE . "TOKEN_RIGHT_BRACE")
+                 (TOKEN_RIGHT_BRACE . "TOKE_RIGHT_BRACE")
                  (TOKEN_COMMA . "TOKEN_COMMA")
                  (TOKEN_DOT . "TOKEN_DOT")
                  (TOKEN_MINUS . "TOKEN_MINUS")
@@ -74,6 +74,7 @@
                  (TOKEN_WHILE . "TOKEN_WHILE")
 
                  (TOKEN_EOF . "TOKEN_EOF")
+                 ;; TOKEN ERROR
                  (TOKEN_ERROR . "TOKEN_ERROR")))
                  
 (define token-types (alist->hash-table tokenb))                 
@@ -95,29 +96,21 @@
                                       ("var" . TOKEN_VAR)
                                       ("while" . TOKEN_WHILE))))
 
-;; must be a list of characters
-(define (rev-lst-str lst) (list->string (reverse lst)))
-
-(define (keyword? str)
+(define (lox-keyword? str)
   (let ((handle (hash-get-handle keywords str)))
     (if (pair? handle)
       (cdr handle)
       'TOKEN_IDENTIFIER)))
 
 (define (make-error-token port)
-  (get-char port) ;; char needs to be consumed
+  (display "Making ERROR\n")
+  ;; i need to consume the char
+  (get-char port)
   (make-token 'TOKEN_ERROR "ERROR" NIL (port-line port)))
 
 (define (make-eof-token port)
   (make-token 'TOKEN_EOF "EOF" NIL (port-line port))) 
 
-(define ())
-
-;; bang !, !=
-;; equal =, ==
-;; lt < , <=
-;; gt > , >=
-;; comment
 (export token-types
         token
         make-token
@@ -126,7 +119,6 @@
         token-object
         token-line
         keywords
-        keyword?
+        lox-keyword?
         make-error-token
-        make-eof-token
-        rev-lst-str)
+        make-eof-token)

@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-ctags -R src
+gtags --gtagslabel=new-ctags
 # ... entry is default library load path
 export GUILE_LOAD_PATH=src:...
 printf "Load Path %s\n" $GUILE_LOAD_PATH
