@@ -18,6 +18,15 @@
 (define (digit? char)
   (and (char>=? char #\0) (char<=? char #\9)))
 
+(define (period? char) (char=? char #\.))
+
+(define (num-symbol? char) (or (digit? char) (period? char)))
+
+;; ending condition for stopping the scanning of numbers
+(define (end-num? char) (or (alpha? char)
+                            (whitespace? char)
+                            (alpha-symbol? char)))
+
 (define (alpha-numeric? char)
   (or (alpha? char) (digit? char)))
 
@@ -67,5 +76,8 @@
         cmp?
         comment?
         slash?
-        double?)
+        double?
+        period?
+        num-symbol?
+        end-num?)
         

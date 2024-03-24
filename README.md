@@ -70,6 +70,20 @@ with scan string, there is two options,
 if char is quote, then check to see if `start` and `str` are defined, if not then
 begin defining the string. if yes then begin returning the string lexeme and stuff
 
+scan-number: port :optional digits found-period?
+
+on first call scan-number is guaranteed to be digit?
+
+if digits is empty, then it is first call, add to char to digits and continue
+
+if digits is defined, and char is end-num? then make token
+
+if period is found, then this implies that digits is defined, set found-period to true, add to digits
+if second period is found then raise Guile error as placeholder for proper error handling.
+
+if period is found and then char is somehow not digit? and is alpha? or alpha-symbol? or whitespace?
+if found-period? is set and first elements of digits is period, then raise error
+
 ### Parser
 
 ### Code Generation

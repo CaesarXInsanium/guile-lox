@@ -5,7 +5,9 @@
 
 (define NIL '())
 
-(define (revstr lst) (list->string (reverse lst)))
+;; assumes a list of chars
+(define (revstr lst) 
+  (list->string (reverse lst)))
 
 (define (ignore-line port)
   (get-line port)
@@ -15,14 +17,23 @@
 ;; b is peeked
 (define (scan-bang port a b)
   (if (char=? b #\=)
-    (cons (make-token 'TOKEN_BANG_EQUAL (char->string a (get-char port)) NIL (port-line port))
+    (cons (make-token 'TOKEN_BANG_EQUAL 
+                     (char->string a (get-char port)) 
+                     NIL 
+                     (port-line port))
           (scan port))
-    (cons (make-token 'TOKEN_BANG (char->string a) NIL (port-line port))
+    (cons (make-token 'TOKEN_BANG 
+                      (char->string a) 
+                      NIL 
+                      (port-line port))
       (scan port))))
 
 (define (scan-eql port a b)
   (if (char=? b #\=)
-    (cons (make-token 'TOKEN_EQUAL_EQUAL (char->string a (get-char port)) NIL (port-line port))
+    (cons (make-token 'TOKEN_EQUAL_EQUAL 
+                      (char->string a (get-char port)) 
+                      NIL 
+                      (port-line port))
           (scan port))
           
     (cons (make-token 'TOKEN_EQUAL (char->string a) NIL (port-line port))
@@ -35,7 +46,6 @@
 
 (define (scan-slash port a b)
   (error "Implement scan-slash"))
-    
 
 ;; the char is from pair char which is member of double or single tokens
 (define* (scan-op port #:optional str)
@@ -96,18 +106,27 @@
                   (scan-string port (cons char str)))
                  (else (scan-string port (cons char NIL))))))
 
-(define* (scan-number port #:optional digits)
+;; it MUST start with digit, can only contain one period
+;; in order to support floats
+;; on first call, char is guranteed to be digit?
+(define* (scan-number port #:optional digits found-period?)
          (let ((char (get-char port)))
-           (cond ((eof-object? char) (error "EOF Object Found in scan-number"))
-                 ((and (not (digit? char)) digits)
+           (cond ((eof-object? char) (error "EOF Object found in scan-number"))
+                 ((not digits) (scan-number port (cons char NIL) found-period?))
+                 ((and digits (end-num? char)) 
                   (cons (make-token 'TOKEN_NUMBER
-                                    (revstr (cons char digits))
-                                    NIL
-                                    (port-line port))
-                        (scan port)))
-                 ((and (digit? char) digits)
-                  (scan-number port (cons char digits)))
-                 (else (scan-number port (cons char NIL))))))
+                                 (revstr digits)
+                                 NIL
+                                 (port-line port))
+                        (begin (unget-char port char) ;; put char back in port, to continue scanning properly
+                               (scan port))))
+                 ((and (period? char) (not found-period?)) 
+                  (scan-number port (cons char digits) #t))
+                 ((and (period? char) found-period?) (error "Second period found!"))
+                 ((and (period? (car digits)) (not (digit? char)))
+                  (error "non digit found after period in scan-number"))
+                 (else (scan-number port (cons char digits) found-period?)))))
+                  
 
 (define (scan port)
  ;; we need to peek here
@@ -115,18 +134,20 @@
     (cond ((eof-object? char) (cons (make-eof-token port) NIL)) 
           ;; tokens comprising of single char
           ((single-char? char) (cons (make-token (single-char? (get-char port))
-                                                 (list->string (list char))
+                                                 (revstr (list char))
                                                  NIL
                                                  (port-line port))
                                      (scan port)))
+          ;; two character operators and comments
           ((double? char) (scan-op port))
-          ;; strings?
+          ;; strings
           ((quote-mark? char) (scan-string port))
           ;; identifier or keyword?
           ((alpha? char) (scan-identifier port))
           ;; whitespace is ignored, consume token and continue
           ((whitespace? char) (begin (get-char port)
                                      (scan port)))
+          ;; numbers, floats are not yet supported
           ((digit? char) (scan-number port))
           (else (cons (make-error-token port) (scan port))))))
 
