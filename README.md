@@ -7,9 +7,15 @@ in order to get some idea on what sort of things I can work on.
 Most of the planning and ideas will be done inside of a notebook so
 yeah.
 
+I have moved this folder to a new location.
+
 ## Progress
 
 Here I will track progress and ideas that I need to get my head in order
+
+### TODO
+
+- add proper errors for incorrect grammars
 
 ### Error Reporting
 
