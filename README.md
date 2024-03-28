@@ -9,6 +9,8 @@ yeah.
 
 I have moved this folder to a new location.
 
+I have decided to write my Lox implementation in Conforming R7RS small scheme.
+
 ## Progress
 
 Here I will track progress and ideas that I need to get my head in order

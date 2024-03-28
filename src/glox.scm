@@ -23,6 +23,18 @@
   (let ((tokens (scan source)))
     (format STDOUT "Tokens:~%~s" tokens)))
 
+(define (prompt output-port input-port str)
+  (format output-port str)
+  (get-line input-port))
+  
+(define prompt-message "> ")
+
+(define (run-repl)
+  (let loop ((user-input (prompt STDOUT STDIN prompt-message)))
+    (begin (run (open-input-string user-input))
+           (loop (prompt STDOUT STDIN prompt-message)))))
+  
+
 ;; arguments, there is always at least one argument
 (define (glox-main args)
 ;; entry point
@@ -30,6 +42,6 @@
   (newline)
   (if (< 1 (length args))
     (run-file (list-ref args 1))
-    (run (open-input-string (get-line STDIN)))))
+    (run-repl)))
 
 (export glox-main)

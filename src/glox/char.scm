@@ -9,11 +9,10 @@
                       
 
 (define (alpha? char)
-  (or (or (and (char>=? char #\a) 
-               (char<=? char #\z)) 
-          (and (char>=? char #\A)
-               (char<=? char #\Z)))
-      (char=? char #\_)))
+  (or (and (char>=? char #\a) 
+           (char<=? char #\z)) 
+      (and (char>=? char #\A)
+           (char<=? char #\Z))))
 
 (define (digit? char)
   (and (char>=? char #\0) (char<=? char #\9)))
@@ -25,7 +24,8 @@
 ;; ending condition for stopping the scanning of numbers
 (define (end-num? char) (or (alpha? char)
                             (whitespace? char)
-                            (alpha-symbol? char)))
+                            (alpha-symbol? char)
+                            (single-char? char)))
 
 (define (alpha-numeric? char)
   (or (alpha? char) (digit? char)))

@@ -1,7 +1,9 @@
-(define-module (glox scanner))
-(use-modules (ice-9 textual-ports)
-             (glox char)
-             (glox tokens))
+(define-module (glox scanner)
+  #:use-module (ice-9 textual-ports)
+  #:use-module (glox char)
+  #:use-module (glox tokens)
+  #:export (scan scan-number revstr NIL scan-bang scan-cmp scan-slash scan-op
+                 scan-eql scan-identifier scan-string))
 
 (define NIL '())
 
@@ -108,8 +110,9 @@
 
 ;; it MUST start with digit, can only contain one period
 ;; in order to support floats
-;; on first call, char is guranteed to be digit?
-(define* (scan-number port #:optional digits found-period?)
+;; on first call, char is guaranteed to be digit?
+(define* (scan-number1 port #:optional digits found-period?)
+         (format (current-output-port) "Char: ~s, Digits: ~s, found-period?: ~s~%" (lookahead-char port) digits found-period?)
          (let ((char (get-char port)))
            (cond ((eof-object? char) (error "EOF Object found in scan-number"))
                  ((not digits) (scan-number port (cons char NIL) found-period?))
@@ -126,6 +129,33 @@
                  ((and (period? (car digits)) (not (digit? char)))
                   (error "non digit found after period in scan-number"))
                  (else (scan-number port (cons char digits) found-period?)))))
+
+(define* (scan-number port #:optional first? found-period digits)
+         (if (not first?)
+           (scan-number port #t found-period (cons (get-char port) NIL))
+           (let ((char (lookahead-char port)))
+             (if (eof-object? char)
+               (error "EOF found in scan-number")
+               (if found-period
+                 (if (digit? char)
+                   (scan-number port first? found-period (cons char digits))
+                   (cons (make-token 'TOKEN_NUMBER
+                                  (revstr digits)
+                                  NIL
+                                  (port-line port))
+                         (scan port)))
+                 (if (period? char)
+                   (scan-number port first? #t (cons (get-char port) digits))
+                   (if (digit? char)
+                     (scan-number port first found-period (cons (get-char port) digits))
+                     (cons (make-token 'TOKEN_NUMBER
+                                       (revstr digits)
+                                       NIL
+                                       (port-line port))
+                           (scan port)))))))))
+               
+                   
+                   
                   
 
 (define (scan port)
@@ -151,4 +181,3 @@
           ((digit? char) (scan-number port))
           (else (cons (make-error-token port) (scan port))))))
 
-(export scan)
