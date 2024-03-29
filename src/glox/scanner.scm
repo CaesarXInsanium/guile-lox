@@ -111,26 +111,9 @@
 ;; it MUST start with digit, can only contain one period
 ;; in order to support floats
 ;; on first call, char is guaranteed to be digit?
-(define* (scan-number1 port #:optional digits found-period?)
-         (format (current-output-port) "Char: ~s, Digits: ~s, found-period?: ~s~%" (lookahead-char port) digits found-period?)
-         (let ((char (get-char port)))
-           (cond ((eof-object? char) (error "EOF Object found in scan-number"))
-                 ((not digits) (scan-number port (cons char NIL) found-period?))
-                 ((and digits (end-num? char)) 
-                  (cons (make-token 'TOKEN_NUMBER
-                                 (revstr digits)
-                                 NIL
-                                 (port-line port))
-                        (begin (unget-char port char) ;; put char back in port, to continue scanning properly
-                               (scan port))))
-                 ((and (period? char) (not found-period?)) 
-                  (scan-number port (cons char digits) #t))
-                 ((and (period? char) found-period?) (error "Second period found!"))
-                 ((and (period? (car digits)) (not (digit? char)))
-                  (error "non digit found after period in scan-number"))
-                 (else (scan-number port (cons char digits) found-period?)))))
-
-(define* (scan-number port #:optional first? found-period digits)
+;; the only solution is to split this shit into two seperate functions
+;; state is represented with functions
+(define* (scan-number-02 port #:optional first? found-period digits)
          (if (not first?)
            (scan-number port #t found-period (cons (get-char port) NIL))
            (let ((char (lookahead-char port)))
@@ -153,9 +136,32 @@
                                        NIL
                                        (port-line port))
                            (scan port)))))))))
-               
-                   
-                   
+
+(define* (scan-number port #:optional digits)
+         (let ((char (lookahead-char port)))
+          (cond ((eof-object? char) (error "EOF object found in scan-number"))
+                ((not digits) (scan-number port (cons (get-char port) NIL)))
+                ((period? char) (scan-float port (cons (get-char port) 
+                                                       digits)))
+                ((digit? char) (scan-number port (cons (get-char port)
+                                                       digits)))
+                (else (cons (make-token 'TOKEN_NUMBER
+                                      (revstr digits)
+                                      NIL
+                                      (port-line port))
+                            (scan port))))))
+
+(define (scan-float port digits)
+  (let ((char (lookahead-char port)))
+    (cond ((eof-object? char) (error "EOF object found in scan-float"))
+          ((digit? char) (scan-float port (cons (get-char port) digits)))
+          ((and (period? (car digits)) (not (digit? char)))
+           (error "non digit found after period in float literal"))
+          (else (cons (make-token 'TOKEN_NUMBER
+                                  (revstr digits)
+                                  NIL
+                                  (port-line port))
+                      (scan port))))))
                   
 
 (define (scan port)
