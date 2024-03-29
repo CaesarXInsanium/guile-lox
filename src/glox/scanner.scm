@@ -2,18 +2,10 @@
   #:use-module (ice-9 textual-ports)
   #:use-module (glox char)
   #:use-module (glox tokens)
-  #:export (scan scan-number revstr NIL scan-bang scan-cmp scan-slash scan-op
+  #:use-module (glox utils)
+  #:export (scan scan-number scan-bang scan-cmp scan-slash scan-op
                  scan-eql scan-identifier scan-string))
 
-(define NIL '())
-
-;; assumes a list of chars
-(define (revstr lst) 
-  (list->string (reverse lst)))
-
-(define (ignore-line port)
-  (get-line port)
-  (scan port))
 
 ;; a is consumed
 ;; b is peeked
@@ -43,11 +35,36 @@
 
 (define (scan-cmp port a b)
   (if (char=? b #\=)
-    (error "implement scan-cmp: handle: >= <=")
-    (error "implement scan-cmp: handle: <  > ")))
+    (cond ((char=? a #\<) (cons (make-token 'TOKEN_LESS_EQUAL
+                                            (revstr (list a b))
+                                            NIL
+                                            (port-line port))
+                                (scan-port)))
+          ((char=? a #\>) (cons (make-token 'TOKEN_GREATER_EQUAL
+                                            (revstr (list a b))
+                                            NIL
+                                            (port-line port))
+                                (scan port)))
+          (else (error "error unreachable in scan-cmp")))
+    (cond ((char=? a #\<) (cons (make-token 'TOKEN_LESS
+                                            (revstr (list a))
+                                            NIL
+                                            (port-line port))
+                                (scan port)))
+          ((char=? a #\>) (cons (make-token 'TOKEN_GREATER
+                                            (revstr (list a))
+                                            NIL
+                                            (port-line port))
+                                (scan port)))
+          (else (error "This error should be unreachable in scan-cmp")))))
 
+;; division, a is guranteed / character
 (define (scan-slash port a b)
-  (error "Implement scan-slash"))
+  (cons (make-token 'TOKEN_SLASH
+                    (revstr (list a))
+                    NIL
+                    (port-line port))
+        (scan port)))
 
 ;; the char is from pair char which is member of double or single tokens
 (define* (scan-op port #:optional str)
@@ -57,7 +74,7 @@
           ((eql? a) (scan-eql port a b))
           ;; > or <
           ((cmp? a) (scan-cmp port a b))
-          ((comment? a b) (ignore-line port))
+          ((comment? a b) (ignore-line port scan))
           ((slash? a) (scan-slash port a b))
           ((eof-object? b) (error "FUCKING EOF found in scan-op"))
           (else (error "Invalid OP")))))
@@ -96,7 +113,7 @@
 ;; must handle a situation where it finds a EOF marker
 (define* (scan-string port #:optional str)
          (let ((char (get-char port)))
-           (cond ((eof-object? char) (error "EOF object found scan-string"))
+           (cond ((eof-object? char) (error "EOF object found scan-string, unterminated?"))
                  ((and (quote-mark? char) str)
                   (cons (make-token 'TOKEN_STRING
                                     (revstr (cons char str))
@@ -113,30 +130,6 @@
 ;; on first call, char is guaranteed to be digit?
 ;; the only solution is to split this shit into two seperate functions
 ;; state is represented with functions
-(define* (scan-number-02 port #:optional first? found-period digits)
-         (if (not first?)
-           (scan-number port #t found-period (cons (get-char port) NIL))
-           (let ((char (lookahead-char port)))
-             (if (eof-object? char)
-               (error "EOF found in scan-number")
-               (if found-period
-                 (if (digit? char)
-                   (scan-number port first? found-period (cons char digits))
-                   (cons (make-token 'TOKEN_NUMBER
-                                  (revstr digits)
-                                  NIL
-                                  (port-line port))
-                         (scan port)))
-                 (if (period? char)
-                   (scan-number port first? #t (cons (get-char port) digits))
-                   (if (digit? char)
-                     (scan-number port first found-period (cons (get-char port) digits))
-                     (cons (make-token 'TOKEN_NUMBER
-                                       (revstr digits)
-                                       NIL
-                                       (port-line port))
-                           (scan port)))))))))
-
 (define* (scan-number port #:optional digits)
          (let ((char (lookahead-char port)))
           (cond ((eof-object? char) (error "EOF object found in scan-number"))
@@ -183,7 +176,6 @@
           ;; whitespace is ignored, consume token and continue
           ((whitespace? char) (begin (get-char port)
                                      (scan port)))
-          ;; numbers, floats are not yet supported
           ((digit? char) (scan-number port))
           (else (cons (make-error-token port) (scan port))))))
 

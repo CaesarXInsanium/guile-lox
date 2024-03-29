@@ -1,13 +1,22 @@
-(define-module (glox tokens))
-;; allows for defining records
+(define-module (glox tokens)
+  #:use-module (glox utils)
+  #:use-module (srfi srfi-9)
+  #:use-module (srfi srfi-9 gnu)
+  #:use-module (ice-9 hash-table)
+  #:use-module (ice-9 format)
+  #:use-module (ice-9 textual-ports)
+  #:export (token-types
+            token
+            make-token
+            token-type
+            token-lexeme
+            token-object
+            token-line
+            keywords
+            lox-keyword?
+            make-error-token
+            make-eof-token))
 
-(use-modules (srfi srfi-9)
-             (srfi srfi-9 gnu)
-             (ice-9 format) ;; custom printer
-             (ice-9 hash-table)
-             (ice-9 textual-ports))
-
-(define NIL '())
 ;; simple type
 (define-record-type token
   (make-token type lexeme object line)
@@ -20,12 +29,12 @@
 
 (set-record-type-printer! token 
                           (lambda (record port)
-                            (display (format #f "Type: ~s, Lexeme: ~s, Object: ~s, Line: ~d~%"
+                            (format port "Type: ~18a Object: ~6s, Line: ~3d Lexeme: ~10a ~%"
                                              (symbol->string (token-type record))
-                                             (token-lexeme record)
-                                             (token-object record) ;; will have to live with this horror
-                                             (token-line record))
-                                     port)))
+                                             (token-object record)
+                                             (token-line record) ;; will have to live with this horror
+                                             (token-lexeme record))))
+                                     
 
 ;; alist defining the token TYPE
 (define tokenb '((TOKEN_LEFT_PAREN . "TOKEN_LEFT_PAREN")
@@ -110,15 +119,3 @@
 
 (define (make-eof-token port)
   (make-token 'TOKEN_EOF "EOF" NIL (port-line port))) 
-
-(export token-types
-        token
-        make-token
-        token-type
-        token-lexeme
-        token-object
-        token-line
-        keywords
-        lox-keyword?
-        make-error-token
-        make-eof-token)

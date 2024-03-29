@@ -1,5 +1,21 @@
-(define-module (glox char))
-(define NIL '())
+(define-module (glox char)
+  #:export (whitespace?
+             digit?
+             alpha?
+             alpha-numeric?
+             alpha-symbol?
+             quote-mark?
+             single-char?
+             char->string
+             bang?
+             eql?
+             cmp?
+             comment?
+             slash?
+             double?
+             period?
+             num-symbol?
+             end-num?))
 
 (define whitespace? 
   (lambda (char)
@@ -62,22 +78,3 @@
       (eql? char)
       (cmp? char)
       (slash? char)))
-
-(export whitespace?
-        digit?
-        alpha?
-        alpha-numeric?
-        alpha-symbol?
-        quote-mark?
-        single-char?
-        char->string
-        bang?
-        eql?
-        cmp?
-        comment?
-        slash?
-        double?
-        period?
-        num-symbol?
-        end-num?)
-        
