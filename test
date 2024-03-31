@@ -1,0 +1,10 @@
+#!/usr/bin/bash
+echo "Running Tests"
+
+GUILE_LOAD_PATH=src:$GUILE_LOAD_PATH
+printf "Load path %s\n" $GUILE_LOAD_PATH
+
+for test in ./tests/*.scm; do
+  printf "Test: % s\n" $test
+  guile $test
+done

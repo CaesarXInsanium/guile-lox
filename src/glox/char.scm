@@ -23,6 +23,11 @@
         (char=? char #\tab)
         (char=? char #\space))))
                       
+(define (even? num)
+  (integer? (/ num 2)))
+
+(define (odd? num)
+  (not (even? num)))
 
 (define (alpha? char)
   (or (and (char>=? char #\a) 

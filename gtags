@@ -1,0 +1,6 @@
+#!/usr/bin/bash
+
+SRC_LIST=.files
+find src -name *.scm > $SRC_LIST
+
+gtags --gtagslabel=new-ctags -f $SRC_LIST

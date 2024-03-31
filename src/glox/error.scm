@@ -13,6 +13,6 @@
 
 ;; macro to tell programmer to do the actual work.
 ;; create a Custom error
-(define (make-lexer-error function port start-column))
+(define (make-lexer-error function port start-column) (TODO 'make-lexer-error (current-error-port)))
 
 (define (make-parser-error token) (error))

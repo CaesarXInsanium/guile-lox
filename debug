@@ -1,3 +1,0 @@
-#! /bin/sh
-
-guile -L src -c "(use-modules (glox))"

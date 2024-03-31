@@ -1,6 +1,0 @@
-#!/usr/bin/env scheme
-!#
-
-(import (lox))
-
-(glox-main (command-line))

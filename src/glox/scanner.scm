@@ -111,6 +111,8 @@
 ;; start is column where string starts, newlines are not handled
 ;; str will be the current progress, list of characters
 ;; must handle a situation where it finds a EOF marker
+;; strings can not end with none terminated quotation mark
+;; newlines must be escaped
 (define* (scan-string port #:optional str)
          (let ((char (get-char port)))
            (cond ((eof-object? char) (error "EOF object found scan-string, unterminated?"))

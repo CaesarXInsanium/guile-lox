@@ -1,3 +1,13 @@
+---
+title:  'GuileLox Docs'
+subtitle: "Documentation for my implementation of Lox interpreter/compiler"
+author:
+- Caesar X Insanium
+description: |
+    Docs
+toc: true
+documentclass: article
+---
 # Purpose
 
 The reason for making this repo is to make a fresh attempt at finding a
@@ -17,16 +27,43 @@ Here I will track progress and ideas that I need to get my head in order
 
 ### TODO
 
-- add proper errors for incorrect grammars
+- start work on AST
+- add proper error system
+- implement the full lexer
+- remove references to Object member in token-record
+- add proper tests
+
 
 ### Error Reporting
 
-I have now clue on how to deal with this issue. Best case scenerio is that Guile
+I have now clue on how to deal with this issue. Best case scenario is that Guile
 errors would be generated and returned with a proper backtrace.
 
 Custom error types will be placed in the file `glox/error.scm`
 
-Scheme RNRS has a section on Exceptions and conditions
+The Guile reference manual is telling me about custom exception types that can
+have different fields and they are all records. The interesting thing is that
+we can create new exception types based on other builtin exception types.
+
+The main idea here is that there are different classes of errors. There will be 
+lexical errors, parser, and code generation errors.
+
+Write now I am focused on lexer errors.
+
+#### Lexer
+
+We have a function `make-lexer-error` will generate a proper error that references
+a location, the context in which error occurs and the actual error.
+
+For example in the `scan-string` function we can have a quotation mark but no
+matching pair to signify the end of the string literal. So what is needed is a
+common interface that is actually helpful to the user.
+
+#### Parser
+
+#### Runtime
+
+#### Compilation
 
 ### Lexer
 
@@ -39,7 +76,7 @@ able to peek at different characters.
 2. switch to function to scan certain token type
 
 Characters are loaded from a source file. In Guile at the
-end of a port there is a EOF object.
+end of a port there is a `EOF` object.
 
 #### Token Types
 
@@ -82,7 +119,7 @@ scan-number: port :optional digits found-period?
 
 on first call scan-number is guaranteed to be digit?
 
-if digits is empty, then it is first call, add to char to digits and continue
+If digits is empty, then it is first call, add to char to digits and continue
 
 if digits is defined, and char is end-num? then make token
 
