@@ -1,9 +1,11 @@
 ;; COMENTARY
 (define-module (glox))
 
-(use-modules (ice-9 textual-ports))
+(use-modules (ice-9 textual-ports)
+             (ice-9 readline))
 
-(use-modules (glox scanner))
+(use-modules (glox scanner)
+             (glox error))
 
 (define STDIN (current-input-port))
 (define STDOUT (current-output-port))
@@ -18,21 +20,28 @@
     (run (open-input-string source))))
 
 ;; source is a port
-(define (run source)
+(define (run1 source)
   (format STDOUT "running source~%")
   (let ((tokens (scan source)))
     (format STDOUT "Tokens:~%~s" tokens)))
 
-(define (prompt output-port input-port str)
-  (format output-port str)
-  (get-line input-port))
+(define (run source)
+  (define tokens (with-exception-handler lexer-exception-handler 
+                                         (lambda ()
+                                           (scan source))
+                                         #:unwind? #t
+                                         #:unwind-for-type &lox-lexer-error))
+  (display tokens)
+  (newline))
   
-(define prompt-message "> ")
+(define prompt "> ")
 
 (define (run-repl)
-  (let loop ((user-input (prompt STDOUT STDIN prompt-message)))
-    (begin (run (open-input-string user-input))
-           (loop (prompt STDOUT STDIN prompt-message)))))
+  (activate-readline)
+  (let loop ((user-input (readline prompt)))
+    (begin (run (open-input-string (if (eof-object? user-input)
+                                     (exit) user-input)))
+           (loop (readline prompt)))))
   
 
 ;; arguments, there is always at least one argument

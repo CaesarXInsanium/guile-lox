@@ -3,6 +3,8 @@
   #:use-module (glox char)
   #:use-module (glox tokens)
   #:use-module (glox utils)
+  #:use-module (glox error)
+  #:use-module (srfi srfi-18)
   #:export (scan scan-number scan-bang scan-cmp scan-slash scan-op
                  scan-eql scan-identifier scan-string))
 
@@ -39,7 +41,7 @@
                                             (revstr (list a b))
                                             NIL
                                             (port-line port))
-                                (scan-port)))
+                                (scan port)))
           ((char=? a #\>) (cons (make-token 'TOKEN_GREATER_EQUAL
                                             (revstr (list a b))
                                             NIL
@@ -115,16 +117,19 @@
 ;; newlines must be escaped
 (define* (scan-string port #:optional str)
          (let ((char (get-char port)))
-           (cond ((eof-object? char) (error "EOF object found scan-string, unterminated?"))
+           (cond ((eof-object? char) (raise (make-scan-string-error (vector -1 -1 -1 -1)
+                                                                    (revstr str))))
+                 ;; finds second quote mark and str is defined, create string
                  ((and (quote-mark? char) str)
                   (cons (make-token 'TOKEN_STRING
                                     (revstr (cons char str))
                                     NIL
                                     (port-line port))
-                                   
                         (scan port)))
+                 ;; continue scanning string
                  ((and (not (quote-mark? char)) str)
                   (scan-string port (cons char str)))
+                 ;; first char, is quote mark
                  (else (scan-string port (cons char NIL))))))
 
 ;; it MUST start with digit, can only contain one period

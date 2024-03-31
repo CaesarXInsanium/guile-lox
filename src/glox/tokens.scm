@@ -6,7 +6,7 @@
   #:use-module (ice-9 format)
   #:use-module (ice-9 textual-ports)
   #:export (token-types
-            token
+            token?
             make-token
             token-type
             token-lexeme

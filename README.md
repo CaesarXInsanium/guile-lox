@@ -50,6 +50,10 @@ lexical errors, parser, and code generation errors.
 
 Write now I am focused on lexer errors.
 
+It needs to print the offending line.
+
+show where the error starts and ends
+
 #### Lexer
 
 We have a function `make-lexer-error` will generate a proper error that references
