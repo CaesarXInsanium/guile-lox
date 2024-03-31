@@ -1,0 +1,4 @@
+#!/usr/bin/bash
+
+rm *.log
+rm GPATH GRTAGS GTAGS
