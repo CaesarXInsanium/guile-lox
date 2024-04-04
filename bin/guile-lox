@@ -1,4 +1,8 @@
 #!/usr/bin/env -S guile -e main -s
 !#
+
+;; assumes that the contents in src directory are installed in location where
+;; guile can find it such as GUILE_LOAD_PATH
+;; Im starting to have an idea on how to build my own guile package manager.
 (use-modules (glox))
 (define (main args) (glox-main args))

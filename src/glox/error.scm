@@ -4,23 +4,25 @@
 (use-modules (glox char)
              (glox utils))
 (use-modules (ice-9 exceptions))
+
+(define STARTPOS 0)
                         
 ;; error type, denotes when a function should be worked on
 ;; this is a macro
 (define-exception-type &todo-error
                        &programming-error 
-                       make-todo-error
-                       todo-error?)
+                       make-todo-error todo-error?)
 (export &todo-error
         make-todo-error
-        todo-error?)
+        todo-error?
+        STARTPOS)
 
 ;; denotes generic lox-error
 (define-exception-type &lox-error
                        &programming-error
                        make-lox-error
                        lox-error?
-                       (where lox-error-where)) ;; is a vector detailing location
+                       (where lox-error-where)) ;; is a pair detailing location
                       ;; (vec start-line start-column end-line end-coloum) 
 (export &lox-error
         make-lox-error
@@ -61,7 +63,7 @@
 
 (define (lexer-exception-handler ex)
   (format (current-error-port)
-          "Type: ~20s, Lexeme: ~20s, Where: %s~%"
+          "Type: ~20s, Where: ~20s, Lexeme: %s~%"
           (exception-kind ex)
           (lox-error-where ex)
           (lox-lexer-error-lexeme ex))) 

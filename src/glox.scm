@@ -20,11 +20,6 @@
     (run (open-input-string source))))
 
 ;; source is a port
-(define (run1 source)
-  (format STDOUT "running source~%")
-  (let ((tokens (scan source)))
-    (format STDOUT "Tokens:~%~s" tokens)))
-
 (define (run source)
   (define tokens (with-exception-handler lexer-exception-handler 
                                          (lambda ()
@@ -53,4 +48,5 @@
     (run-file (list-ref args 1))
     (run-repl)))
 
-(export glox-main)
+(export glox-main
+        run-file)

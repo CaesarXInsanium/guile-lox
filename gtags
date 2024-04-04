@@ -1,10 +1,6 @@
 #!/usr/bin/bash
-
-SRC_LIST=.files
+SRC=`pwd`
+SRC_LIST=$SRC/.files
 # find all source files in current directory
-find src -name *.scm > $SRC_LIST
-# all installed library files
-find /usr/share/guile -name *.scm >> $SRC_LIST
-# generate gtags using ctags
-GTAGSLIBPATH=/usr/share/guile
+fd -a -L --glob "*.scm" . > $SRC_LIST
 gtags --gtagslabel=new-ctags -f $SRC_LIST

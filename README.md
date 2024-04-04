@@ -19,7 +19,11 @@ yeah.
 
 I have moved this folder to a new location.
 
-I have decided to write my Lox implementation in Conforming R7RS small scheme.
+No
+
+I have no decided to abandon this project since I am starting to hit the limits
+of GNU Guile as a programming language implementation. It is slow, maybe later I
+will return.
 
 ## Progress
 
@@ -27,12 +31,13 @@ Here I will track progress and ideas that I need to get my head in order
 
 ### TODO
 
-- start work on AST
-- add proper error system
-- implement the full lexer
+- [ ] start work on AST
+- implement the full lexer : in progress
 - remove references to Object member in token-record
-- add proper tests
-
+- update TODO
+- move TODO to github issues
+- learn git in order to do above
+- reimplement the error system
 
 ### Error Reporting
 
@@ -134,5 +139,11 @@ if period is found and then char is somehow not digit? and is alpha? or alpha-sy
 if found-period? is set and first elements of digits is period, then raise error
 
 ### Parser
+
+What I have is a list of tokens. In Java we need some hacky shit in order to get
+some metaprogramming with a program that outputs code that is then compiled again
+and is used in the parser.
+
+Scheme has a proper macro system so that sort of thing should not be neccesary.
 
 ### Code Generation

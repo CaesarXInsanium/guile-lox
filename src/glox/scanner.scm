@@ -117,7 +117,7 @@
 ;; newlines must be escaped
 (define* (scan-string port #:optional str)
          (let ((char (get-char port)))
-           (cond ((eof-object? char) (raise (make-scan-string-error (vector -1 -1 -1 -1)
+           (cond ((eof-object? char) (raise (make-scan-string-error (cons STARTPOS (ftell port))
                                                                     (revstr str))))
                  ;; finds second quote mark and str is defined, create string
                  ((and (quote-mark? char) str)
@@ -167,6 +167,7 @@
 (define (scan port)
  ;; we need to peek here
   (let ((char (lookahead-char port)))
+    (set! STARTPOS (ftell port))
     (cond ((eof-object? char) (cons (make-eof-token port) NIL)) 
           ;; tokens comprising of single char
           ((single-char? char) (cons (make-token (single-char? (get-char port))
