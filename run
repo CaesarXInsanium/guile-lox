@@ -1,6 +1,5 @@
 #!/usr/bin/bash
 
-gtags --gtagslabel=new-ctags
 # ... entry is default library load path
 # the guile-lox script will pretend that everything in src directory is copied to
 # Guile library installation directory

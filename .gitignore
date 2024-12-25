@@ -3,6 +3,8 @@ GRTAGS
 GTAGS
 .session
 .files
-LOX
+LOX/
+lox/
 tags
+TAGS
 *.log

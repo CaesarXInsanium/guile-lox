@@ -19,11 +19,8 @@ yeah.
 
 I have moved this folder to a new location.
 
-No
-
-I have no decided to abandon this project since I am starting to hit the limits
-of GNU Guile as a programming language implementation. It is slow, maybe later I
-will return.
+That was a lie. The real limit was my intellectual capability. Also the fact that
+I had trouble be understanding the function `define-syntax`
 
 ## Progress
 
