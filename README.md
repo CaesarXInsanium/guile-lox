@@ -28,18 +28,19 @@ Here I will track progress and ideas that I need to get my head in order
 
 ### TODO
 
-- [ ] start work on AST
-- implement the full lexer : in progress
-- remove references to Object member in token-record
-- update TODO
-- move TODO to github issues
-- learn git in order to do above
-- reimplement the error system
+- [ ] start work on parser
+- [ ] implement the full lexer : in progress
+- [ ] remove references to Object member in token-record
+- [x] update TODO
+- [ ] move TODO to GitHub issues
+- [ ] learn GitHub in order to do above
+- [X] reimplement the error system
+- [ ] update code to use the new error system
 
 ### Error Reporting
 
-I have now clue on how to deal with this issue. Best case scenario is that Guile
-errors would be generated and returned with a proper backtrace.
+~I have no clue on how to deal with this issue. Best case scenario is that Guile
+errors would be generated and returned with a proper backtrace.~
 
 Custom error types will be placed in the file `glox/error.scm`
 
@@ -56,20 +57,13 @@ It needs to print the offending line.
 
 show where the error starts and ends
 
-#### Lexer
+#### Solution
 
-We have a function `make-lexer-error` will generate a proper error that references
-a location, the context in which error occurs and the actual error.
-
-For example in the `scan-string` function we can have a quotation mark but no
-matching pair to signify the end of the string literal. So what is needed is a
-common interface that is actually helpful to the user.
-
-#### Parser
-
-#### Runtime
-
-#### Compilation
+All errors related to Lexer are under the `lox-lexer-error` exception type.
+Same with Parser, `lox-parser-error`. Both are under `lox-error`. I am going to
+try and organize everything so that exceptions must be handled in some cases and
+cause a controlled crash in others. This crash should provide some information
+about the nature of the error.
 
 ### Lexer
 
@@ -98,7 +92,7 @@ token-type enum and record.
 
 #### Scanner
 
-Contains internal state
+The state is stored in the GNU Guile runtime function stack.
 
 Source string
 : actual source of the code
