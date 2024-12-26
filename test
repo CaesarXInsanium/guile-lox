@@ -1,10 +1,9 @@
 #!/usr/bin/bash
 echo "Running Tests"
 
-GUILE_LOAD_PATH=src:$GUILE_LOAD_PATH
-printf "Load path %s\n" $GUILE_LOAD_PATH
-
-for test in ./tests/*.scm; do
+test_files=$(fd --extension scm --search-path tests)
+printf "Test Files: %s" test_files
+for test in $test_files; do
   printf "Test: % s\n" $test
-  guile $test
+  guile -L src -s $test
 done

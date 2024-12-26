@@ -1,6 +1,0 @@
-#!/usr/bin/bash
-SRC=`pwd`
-SRC_LIST=$SRC/.files
-# find all source files in current directory
-fd -a -L --glob "*.scm" . > $SRC_LIST
-gtags --gtagslabel=new-ctags -f $SRC_LIST

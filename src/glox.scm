@@ -14,18 +14,19 @@
 ;; Takes a file path, loads the file and evaluates it.
 (define (run-file path)
   "Docs"
-  (format STDOUT "Running File: ~s~%" path)
-  (define port (open path O_RDONLY))
-  (let ((source (get-string-all port)))
+  (format STDOUT "Running File: ~s~%" (canonicalize-path path))
+  (let* ((port (open path O_RDONLY))
+         (source (get-string-all port)))
     (run (open-input-string source))))
 
 ;; source is a port
 (define (run source)
-  (define tokens (with-exception-handler lexer-exception-handler 
-                                         (lambda ()
-                                           (scan source))
-                                         #:unwind? #t
-                                         #:unwind-for-type &lox-lexer-error))
+  (define tokens 
+    (with-exception-handler lexer-exception-handler 
+                            (lambda ()
+                              (scan source))
+                            #:unwind? #t
+                            #:unwind-for-type &lox-lexer-error))
   (display tokens)
   (newline))
   
@@ -37,14 +38,15 @@
     (begin (run (open-input-string (if (eof-object? user-input)
                                      (exit) user-input)))
            (loop (readline prompt)))))
-  
 
 ;; arguments, there is always at least one argument
+;; TODO  sdasd
 (define (glox-main args)
 ;; entry point
   (display args)
   (newline)
   (if (< 1 (length args))
+    ;; assumes that the argument given is a valid path
     (run-file (list-ref args 1))
     (run-repl)))
 

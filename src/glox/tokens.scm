@@ -7,6 +7,7 @@
   #:use-module (ice-9 textual-ports)
   #:export (token-types
             token?
+            token=?
             make-token
             token-type
             token-lexeme
@@ -15,7 +16,9 @@
             keywords
             lox-keyword?
             make-error-token
-            make-eof-token))
+            error-token?
+            make-eof-token
+            eof-token?))
 
 ;; simple type
 (define-record-type token
@@ -26,17 +29,41 @@
   (object token-object)
   (line token-line))
 
+;; What sort of things would take to mean two tokens are equal or equivalent?
+;; same thing in memory can be done with eq?
+;; depends on TOKEN type
+;; keywords are all inherently the same
 
-(set-record-type-printer! token 
-                          (lambda (record port)
-                            (format port "Type: ~18a Object: ~6s, Line: ~3d Lexeme: ~10a ~%"
-                                             (symbol->string (token-type record))
-                                             (token-object record)
-                                             (token-line record) ;; will have to live with this horror
-                                             (token-lexeme record))))
+;; check if TYPES are the same, return false if no
+;; 
+(define unique-toks (list 'TOKEN_IDENTIFIER
+                          'TOKEN_STRING
+                          'TOKEN_NUMBER))
+
+(define (token=? a b)
+  (let ((at (token-type a))
+        (bt (token-type b)))
+    ;; assert that the types are equal
+    (and (eq? at bt)
+         ;; of at is in list unique-toks, check equality for the lexemes
+         (let ((result (memq at unique-toks)))
+           (if result (string=? (token-lexeme a) (token-lexeme b)) #t)))))
+
+(define token-printer 
+  (lambda (record port)
+        (format port "Type: ~18a Object: ~6s, Line: ~3d Lexeme: ~10a ~%"
+                         (symbol->string (token-type record))
+                         (token-object record)
+                         (token-line record) ;; will have to live with this horror
+                         (token-lexeme record))))
+
+(set-record-type-printer! token token-printer) 
+                          
                                      
 
 ;; alist defining the token TYPE
+;; singlechar TOKS are inherently always same token
+;; so are double chars no need to check line numbers
 (define tokenb '((TOKEN_LEFT_PAREN . "TOKEN_LEFT_PAREN")
                  (TOKEN_RIGHT_PAREN . "TOKEN_RIGHT_PAREN")
                  (TOKEN_LEFT_BRACE . "TOKEN_LEFT_BRACE")
@@ -86,24 +113,26 @@
                  ;; TOKEN ERROR
                  (TOKEN_ERROR . "TOKEN_ERROR")))
                  
+;; use hash table for SPEED
 (define token-types (alist->hash-table tokenb))                 
   
-(define keywords (alist->hash-table '(("and" . TOKEN_AND)
-                                      ("class" . TOKEN_CLASS)
-                                      ("else" . TOKEN_ELSE)
-                                      ("false" . TOKEN_FALSE)
-                                      ("fun" . TOKEN_FUN)
-                                      ("for" . TOKEN_FOR)
-                                      ("if" . TOKEN_IF)
-                                      ("nil" . TOKEN_NIL)
-                                      ("or" . TOKEN_OR)
-                                      ("print" . TOKEN_PRINT)
-                                      ("return" . TOKEN_RETURN)
-                                      ("super" . TOKEN_SUPER)
-                                      ("this" . TOKEN_THIS)
-                                      ("true" . TOKEN_TRUE)
-                                      ("var" . TOKEN_VAR)
-                                      ("while" . TOKEN_WHILE))))
+(define keywords 
+  (alist->hash-table '(("and" . TOKEN_AND)
+                       ("class" . TOKEN_CLASS)
+                       ("else" . TOKEN_ELSE)
+                       ("false" . TOKEN_FALSE)
+                       ("fun" . TOKEN_FUN)
+                       ("for" . TOKEN_FOR)
+                       ("if" . TOKEN_IF)
+                       ("nil" . TOKEN_NIL)
+                       ("or" . TOKEN_OR)
+                       ("print" . TOKEN_PRINT)
+                       ("return" . TOKEN_RETURN)
+                       ("super" . TOKEN_SUPER)
+                       ("this" . TOKEN_THIS)
+                       ("true" . TOKEN_TRUE)
+                       ("var" . TOKEN_VAR)
+                       ("while" . TOKEN_WHILE))))
 
 (define (lox-keyword? str)
   (let ((handle (hash-get-handle keywords str)))
@@ -111,11 +140,32 @@
       (cdr handle)
       'TOKEN_IDENTIFIER)))
 
+;; Question becomes, is it possible to recover?
+;; Answer should be no. Error in tokens means that that this shit cant be parsed
 (define (make-error-token port)
-  (display "Making ERROR\n")
   ;; i need to consume the char
-  (get-char port)
-  (make-token 'TOKEN_ERROR "ERROR" NIL (port-line port)))
+  (let* ((pos (ftell port))
+         (col (port-column port))
+         (startofline (- pos col))
+         (line (get-line port)))
+    (seek port pos SEEK_SET)
+    (make-token 'TOKEN_ERROR (format #f "String: ~s" line) NIL (port-line port))))
 
+;; should this function close the port? IDK, only with the REPL maybe?
 (define (make-eof-token port)
   (make-token 'TOKEN_EOF "EOF" NIL (port-line port))) 
+
+(define-syntax make-token-predicate
+  (syntax-rules () 
+    ((_ token-sym)
+     (lambda (x) (and (token? x)
+                      (eq? token-sym (token-type x)))))))
+
+(define eof-token? (make-token-predicate 'TOKEN_EOF))
+(define error-token? (make-token-predicate 'TOKEN_ERROR))
+
+;; TODO why? why not rely on just ftell?
+(define (get-port-loc port)
+  (list (port-column port)
+        (port-line port)
+        (ftell port)))

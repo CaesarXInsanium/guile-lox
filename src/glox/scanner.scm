@@ -99,6 +99,7 @@
                          (port-line port))
                    (begin (unget-char port char) 
                           (scan port))))
+            ;; TODO get rid of this bullshit
             (else (error (format #f 
                                  "Port: ~s, Char: ~s, Numeric?: ~s, Whitespace?: ~s, str: ~s"
                                  port
@@ -164,10 +165,13 @@
                       (scan port))))))
                   
 
+;; how do we tell if we are starting the scan or just continuing
+;; get current position from ftell
+;; then when error is found, go back to that position, and give line number, column
+;;
 (define (scan port)
  ;; we need to peek here
   (let ((char (lookahead-char port)))
-    (set! STARTPOS (ftell port))
     (cond ((eof-object? char) (cons (make-eof-token port) NIL)) 
           ;; tokens comprising of single char
           ((single-char? char) (cons (make-token (single-char? (get-char port))

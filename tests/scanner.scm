@@ -7,22 +7,19 @@
              (glox error))
 
 (test-begin "scan-string")
-(define number "\"string value\"")
-(define tok (car (scan-string (open-input-string number))))
+(define sample-string "\"string value\"")
+;; scan-string calls scan
+(define tok (car (scan-string (open-input-string sample-string))))
 ;; item returned is a token!
 (test-assert (token? tok))
+;; there is no procedure to test token equality
+(test-assert (procedure? token=?))
 
-;; token is equal to given
-;(test-eq tok
-; ;       (make-token 'TOKEN_STRING
-;                    "\"string value\""
-;                    NIL
-;                    0))
-
-;; rudamentary error
-;; should return LOX_UNTERMINATED_STRING
-(test-error &scan-string-error
-            (car (scan-string (open-input-string "\"asdasdasd"))))
-            
+(test-assert 
+  (token=? tok 
+           (make-token 'TOKEN_STRING
+                       "\"string value\""
+                        NIL
+                        0)))
 
 (test-end "scan-string")

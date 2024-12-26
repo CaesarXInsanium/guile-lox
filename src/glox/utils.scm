@@ -15,3 +15,21 @@
 (define (ignore-line port continue)
   (get-line port)
   (continue port))
+
+(define option? list?)
+(define (unwrap x)
+  (if (list? x)
+      (if (null? x)
+       (error "Empty Monad")
+       (list-ref x 0))
+      (error "Not a Monad")))
+(define (wrap x) (list x))
+
+(define (some x) (list x))
+(define (none) '())
+
+(define none?
+  (lambda (x)
+    (and (list? x) (null? x))))
+(define some? (lambda (x) (not (none? x))))
+
