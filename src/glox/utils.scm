@@ -3,7 +3,7 @@
   #:use-module (glox tokens)
   #:use-module (ice-9 textual-ports)
   #:export (revstr NIL reverse-string option? unwrap wrap some none none? some?
-                   get-all-line))
+                   get-all-line!))
 
 (define NIL '())
 
@@ -14,14 +14,8 @@
 
 (define (reverse-string str) (list->string (reverse (string->list str))))
 
+
 ;; assumes that fseek and ftell are valid
-(define (get-all-line port)
-  (let ((c (port-column port))
-        (f (ftell port)))
-    (begin (seek port (- f c) SEEK_SET)
-           (let ((str (get-line port)))
-             (close-port port)
-             str))))
 
 (define option? list?)
 (define (unwrap x)

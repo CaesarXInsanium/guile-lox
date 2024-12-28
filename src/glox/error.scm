@@ -4,7 +4,7 @@
                #:use-module (glox char)
                #:use-module (glox utils)
                #:use-module (ice-9 exceptions)
-               #:export (todo!))
+               #:export (todo! make-error-message))
 
 ;; Now the question becomes, should I use R6Rs valid scheme or GNU Guile?
 ;; Answer GNU Guile
@@ -17,12 +17,21 @@
                    (symbol->string sym)
                    sym))))
 
+(define error-reasons '(EARLY_EOF EARLY_NEWLINE))
+
+;; assumes that sym is symbol, reason is also a symbol
+(define (make-error-message caller reason)
+  (format #t "Caller: ~s~%Reason: ~s~%" caller reason))
+
+(define (explain-reason re) (todo! 'explain-reason))
+
 ;; denotes generic lox-error, with just a message. Vague error meant to convey
 ;; the idea that something is wrong with interpreter/compiler code
 (define-exception-type &lox-error
                        &message
                        make-lox-error
                        lox-error?)
+
 
 (export &lox-error
         make-lox-error
@@ -43,10 +52,10 @@
 (define (lexer-exception-handler ex)
   (let ((lex-port (lox-lexer-error-port ex)))
     (format (current-error-port)
-            "Line: ~3s, ftell: ~3s,~%Lex: ~s,~%Error Message: ~20s"
+            "(Line/Column):(~s/~s), ftell: ~3s~%Error Message: ~20s"
             (port-line lex-port)
+            (port-column lex-port)
             (ftell lex-port)
-            (get-all-line lex-port)
             (exception-message ex))))
 
 (export &lox-lexer-error

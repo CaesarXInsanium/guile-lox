@@ -122,8 +122,10 @@
 ;; newlines must be escaped
 (define* (scan-string port #:optional str)
          (let ((char (get-char port)))
-           (cond ((eof-object? char) (raise (make-scan-string-error (cons STARTPOS (ftell port))
-                                                                    (revstr str))))
+           (cond ((eof-object? char) 
+                  (raise-exception (make-lox-lexer-error (make-error-message 'scan-string
+                                                                             'EARLY_EOF)
+                                                         port)))
                  ;; finds second quote mark and str is defined, create string
                  ((and (quote-mark? char) str)
                   (cons (make-token 'TOKEN_STRING
@@ -193,6 +195,6 @@
           ((whitespace? char) (begin (get-char port)
                                      (scan port)))
           ((digit? char) (scan-number port))
-          ;; unsupported characters
+          ;; handle unsupported characters
           (else (cons (make-error-token port) (scan port))))))
 

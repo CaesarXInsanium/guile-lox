@@ -31,12 +31,16 @@
   
 (define prompt "> ")
 
+;; TODO command history
 (define (run-repl)
   ;; activate-readline is very useful when inputing code into a REPL
   (activate-readline)
+  (define previous NIL)
   (let loop ((user-input (readline prompt)))
+    ;; TODO handle cases where user inputs certain Key Sequences
     (begin (run (open-input-string (if (eof-object? user-input)
                                      (exit) user-input)))
+           (set! previous user-input)
            (loop (readline prompt)))))
 
 ;; arguments, there is always at least one argument
