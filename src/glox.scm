@@ -20,19 +20,19 @@
     (run (open-input-string source))))
 
 ;; source is a port
+;; This function will have to be updated when work on parser commences
 (define (run source)
-  (define tokens 
-    (with-exception-handler lexer-exception-handler 
-                            (lambda ()
-                              (scan source))
-                            #:unwind? #t
-                            #:unwind-for-type &lox-lexer-error))
+  (define tokens (with-exception-handler lexer-exception-handler 
+                                         (lambda () (scan source))
+                                         #:unwind? #t
+                                         #:unwind-for-type &lox-lexer-error))
   (display tokens)
   (newline))
   
 (define prompt "> ")
 
 (define (run-repl)
+  ;; activate-readline is very useful when inputing code into a REPL
   (activate-readline)
   (let loop ((user-input (readline prompt)))
     (begin (run (open-input-string (if (eof-object? user-input)
@@ -40,7 +40,7 @@
            (loop (readline prompt)))))
 
 ;; arguments, there is always at least one argument
-;; TODO  sdasd
+;; TODO better argument processing
 (define (glox-main args)
 ;; entry point
   (display args)

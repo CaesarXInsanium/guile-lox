@@ -26,13 +26,10 @@ I had trouble be understanding the function `define-syntax`
 
 Here I will track progress and ideas that I need to get my head in order
 
-### TODO
-
 - [ ] start work on parser
 - [ ] implement the full lexer : in progress
 - [ ] remove references to Object member in token-record
-- [x] update TODO
-- [ ] move TODO to GitHub issues
+- [ ] move this list to GitHub issues
 - [ ] learn GitHub in order to do above
 - [X] reimplement the error system
 - [ ] update code to use the new error system

@@ -163,9 +163,3 @@
 
 (define eof-token? (make-token-predicate 'TOKEN_EOF))
 (define error-token? (make-token-predicate 'TOKEN_ERROR))
-
-;; TODO why? why not rely on just ftell?
-(define (get-port-loc port)
-  (list (port-column port)
-        (port-line port)
-        (ftell port)))
