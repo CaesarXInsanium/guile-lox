@@ -78,6 +78,9 @@ able to peek at different characters.
 Characters are loaded from a source file. In Guile at the
 end of a port there is a `EOF` object.
 
+What if I just return the port? I get to preserve the state of the IO and also
+be able to give more information about the error got in the first place.
+
 #### Token Types
 
 We can easily define a token record. It will only be a scheme record, in fact

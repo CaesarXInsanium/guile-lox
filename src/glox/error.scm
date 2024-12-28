@@ -17,53 +17,59 @@
                    (symbol->string sym)
                    sym))))
 
-;; denotes generic lox-error
+;; denotes generic lox-error, with just a message. Vague error meant to convey
+;; the idea that something is wrong with interpreter/compiler code
 (define-exception-type &lox-error
                        &message
                        make-lox-error
-                       lox-error?
-                       (where lox-error-where)) ;; value from (ftell port)
-                      ;; (vec start-line start-column end-line end-coloum) 
-
-(define valid-port-location? exact-integer?)
+                       lox-error?)
 
 (export &lox-error
         make-lox-error
-        lox-error?
-        lox-error-where)
+        lox-error?)
 
 ;; by default it should inherit the fields of &lox-error
+;; contains the port, so that the error handler can pick it apart and learn about
+;; the place where the error occurred.
 (define-exception-type &lox-lexer-error
                        &lox-error
                        make-lox-lexer-error
                        lox-lexer-error?
-                       (lexeme lox-lexer-error-lexeme))
+                       (port lox-lexer-error-port))
+
+;; the port is that of a string port. so port-line and port-coloumn are valid
+;; this makes sense since port is actually the open-input-string port, no STDIN
+;; or the file/io port
+(define (lexer-exception-handler ex)
+  (let ((lex-port (lox-lexer-error-port ex)))
+    (format (current-error-port)
+            "Line: ~3s, ftell: ~3s,~%Lex: ~s,~%Error Message: ~20s"
+            (port-line lex-port)
+            (ftell lex-port)
+            (get-all-line lex-port)
+            (exception-message ex))))
 
 (export &lox-lexer-error
         make-lox-lexer-error
         lox-lexer-error?
-        lox-lexer-error-lexeme)
+        lox-lexer-error-port
+        lexer-exception-handler)
 
 ;; PARSER
 (define-exception-type &lox-parser-error
                        &lox-error
                        make-lox-parser-error
                        lox-parser-error?
+                       ;; returns current state of the AST
                        (ast lox-parser-error-ast))
 
 
 (export &lox-parser-error
         make-lox-parser-error
-        lox-parser-error?)
+        lox-parser-error?
+        lox-parser-error-ast)
 
 ;; Evaluator
-
-(define (lexer-exception-handler ex)
-  (format (current-error-port)
-          "Lexer Error ~20s, Line: ~20s, Lexeme: ~s"
-          (exception-kind ex)
-          (lox-error-where ex)
-          (lox-lexer-error-lexeme ex))) 
 
 (define (lox-error-handler ex)
   (cond ((lox-compiler-error? ex) (todo! '&lox-compiler))
@@ -73,4 +79,3 @@
                                        "Message: ~s~%"
                                        (exception-message ex)))))
 
-(export lexer-exception-handler)

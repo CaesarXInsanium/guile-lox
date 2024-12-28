@@ -8,6 +8,10 @@
   #:export (scan scan-number scan-bang scan-cmp scan-slash scan-op
                  scan-eql scan-identifier scan-string))
 
+;; continue is a function that accepts a port as an argument
+(define (ignore-line port continue)
+  (get-line port)
+  (continue port))
 
 ;; a is consumed
 ;; b is peeked
@@ -81,7 +85,7 @@
           ((cmp? a) (scan-cmp port a b))
           ((comment? a b) (ignore-line port scan))
           ((slash? a) (scan-slash port a b))
-          ((eof-object? b) (error "FUCKING EOF found in scan-op"))
+          ((eof-object? b) (raise-exception (make-lox-lexer-error "FUCKING EOF found in scan-op")))
           (else (error "Invalid OP")))))
 
 ;; (define (scan-number port #:key start))
@@ -175,7 +179,7 @@
     (cond ((eof-object? char) (cons (make-eof-token port) NIL)) 
           ;; tokens comprising of single char
           ((single-char? char) (cons (make-token (single-char? (get-char port))
-                                                 (revstr (list char))
+                                                 (list->string (list char))
                                                  NIL
                                                  (port-line port))
                                      (scan port)))
@@ -189,5 +193,6 @@
           ((whitespace? char) (begin (get-char port)
                                      (scan port)))
           ((digit? char) (scan-number port))
+          ;; unsupported characters
           (else (cons (make-error-token port) (scan port))))))
 
