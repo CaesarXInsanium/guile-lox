@@ -15,7 +15,7 @@
 (test-end "todo")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; lox-error
+;; LOX ERROR
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (test-begin "lox-error")
 
@@ -33,7 +33,7 @@
 (test-end "lox-error")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; lox-lexer-error
+;; LOX LEXER ERROR
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (test-begin "lox-lexer-error")
 ;; corrent building
@@ -60,5 +60,10 @@
 (test-end "lox-lexer-error")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; lox-scan-string-error
+;; LOX PARSER ERROR
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(test-begin "lox-parser-error")
+(define b (make-lox-parser-error "Funny Message" 0 "Stupid AST"))
+(test-assert (lox-error? b))
+(test-assert (lox-parser-error? b))
+(test-end "lox-parser-error")

@@ -51,11 +51,11 @@
 
 (define token-printer 
   (lambda (record port)
-        (format port "Type: ~18a Object: ~6s, Line: ~3d Lexeme: ~10a ~%"
+        (format port "Type: ~20a Line ~3d, Lexeme ~20s, Object ~20s ~%"
                          (symbol->string (token-type record))
-                         (token-object record)
                          (token-line record) ;; will have to live with this horror
-                         (token-lexeme record))))
+                         (token-lexeme record)
+                         (token-object record))))
 
 (set-record-type-printer! token token-printer) 
                           

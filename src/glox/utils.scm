@@ -31,5 +31,6 @@
 (define none?
   (lambda (x)
     (and (list? x) (null? x))))
+
 (define some? (lambda (x) (not (none? x))))
 

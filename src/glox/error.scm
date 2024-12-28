@@ -48,7 +48,8 @@
 (define-exception-type &lox-parser-error
                        &lox-error
                        make-lox-parser-error
-                       lox-parser-error?)
+                       lox-parser-error?
+                       (ast lox-parser-error-ast))
 
 
 (export &lox-parser-error
@@ -59,9 +60,17 @@
 
 (define (lexer-exception-handler ex)
   (format (current-error-port)
-          "Type: ~20s, Where: ~20s, Lexeme: %s~%"
+          "Lexer Error ~20s, Line: ~20s, Lexeme: ~s"
           (exception-kind ex)
           (lox-error-where ex)
           (lox-lexer-error-lexeme ex))) 
+
+(define (lox-error-handler ex)
+  (cond ((lox-compiler-error? ex) (todo! '&lox-compiler))
+        ((lox-interpreter-error? ex) (todo! '&lox-interpreter))
+        ((lox-parser-error? ex) (todo! '&lox-parser))
+        ((lox-lexer-error? ex) (format (current-error-port)
+                                       "Message: ~s~%"
+                                       (exception-message ex)))))
 
 (export lexer-exception-handler)

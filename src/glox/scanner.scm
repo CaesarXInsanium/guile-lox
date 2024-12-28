@@ -11,6 +11,7 @@
 
 ;; a is consumed
 ;; b is peeked
+;; ! or !=
 (define (scan-bang port a b)
   (if (char=? b #\=)
     (cons (make-token 'TOKEN_BANG_EQUAL 
@@ -22,8 +23,9 @@
                       (char->string a) 
                       NIL 
                       (port-line port))
-      (scan port))))
+          (scan port))))
 
+;; = or ==
 (define (scan-eql port a b)
   (if (char=? b #\=)
     (cons (make-token 'TOKEN_EQUAL_EQUAL 
@@ -35,6 +37,7 @@
     (cons (make-token 'TOKEN_EQUAL (char->string a) NIL (port-line port))
           (scan port))))
 
+;; > < >= <=
 (define (scan-cmp port a b)
   (if (char=? b #\=)
     (cond ((char=? a #\<) (cons (make-token 'TOKEN_LESS_EQUAL
@@ -88,7 +91,10 @@
 (define* (scan-identifier port #:optional start str)
   (let ((char (get-char port)))
     (if (and start str)
-      (cond ((eof-object? char) (error "EOF found in scan-identifier")) 
+      (cond ((eof-object? char) 
+             (raise-exception (make-lox-lexer-error "EOF found in scan-identifier"
+                                                    (ftell port)
+                                                    (get-line port)))) 
             ((or (alpha-symbol? char) (alpha-numeric? char)) 
              (scan-identifier port start (cons char str)))
             ;; if it is whitespace, we should exclude the char, put it back
@@ -99,14 +105,8 @@
                          (port-line port))
                    (begin (unget-char port char) 
                           (scan port))))
-            ;; TODO get rid of this bullshit
-            (else (error (format #f 
-                                 "Port: ~s, Char: ~s, Numeric?: ~s, Whitespace?: ~s, str: ~s"
-                                 port
-                                 char
-                                 (digit? char)
-                                 (whitespace? char)
-                                 str))))
+            (else (raise-exception (make-lox-lexer-error "scan-identifier: "
+                                                         (ftell port)))))
       (scan-identifier port 0 (cons char NIL)))))
                                                   
 
