@@ -18,10 +18,16 @@
                    sym))))
 
 ;; Error Codes are in Ranges
-(define error-reasons '((SUCCESS . 0) 
+;; 0 SUCCESS
+;; 1-99 Lexer
+;; 100-199 Parser
+;; 
+(define error-reasons '((UNREACHABLE . -1)
+                        (SUCCESS . 0) 
                         (EARLY_EOF . 1) 
                         (EARLY_NEWLINE . 2) 
-                        (UNSUPPORTED_CHAR . 3)))
+                        (UNSUPPORTED_CHAR . 3)
+                        (UNRECOGNIZED_CHAR)))
 
 ;; assumes that sym is symbol, reason is also a symbol
 (define (make-error-message caller reason)

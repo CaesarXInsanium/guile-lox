@@ -54,7 +54,8 @@
                                             NIL
                                             (port-line port))
                                 (scan port)))
-          (else (error "error unreachable in scan-cmp")))
+          (else (make-lox-lexer-error (make-error-message 'scan-cmp 'UNREACHABLE)
+                                      port)))
     (cond ((char=? a #\<) (cons (make-token 'TOKEN_LESS
                                             (revstr (list a))
                                             NIL
@@ -65,7 +66,8 @@
                                             NIL
                                             (port-line port))
                                 (scan port)))
-          (else (error "This error should be unreachable in scan-cmp")))))
+          (else (make-lox-lexer-error (make-error-message 'scan-cmp 'UNREACHABLE)
+                                      port)))))
 
 ;; division, a is guranteed / character
 (define (scan-slash port a b)
@@ -85,8 +87,14 @@
           ((cmp? a) (scan-cmp port a b))
           ((comment? a b) (ignore-line port scan))
           ((slash? a) (scan-slash port a b))
-          ((eof-object? b) (raise-exception (make-lox-lexer-error "FUCKING EOF found in scan-op")))
-          (else (error "Invalid OP")))))
+          ((eof-object? b) 
+           (raise-exception (make-lox-lexer-error (make-error-message 'scan-op 
+                                                                      'EARLY_EOF) 
+                                                  port)))
+          (else (raise-exception (make-lox-lexer-error (make-error-message 'scan-op
+                                                                           'UNRECOGNIZED_CHAR)
+                                                       port))))))
+                                                                           
 
 ;; (define (scan-number port #:key start))
 
@@ -144,6 +152,10 @@
 ;; in order to support floats
 ;; on first call, char is guaranteed to be digit?
 ;; the only solution is to split this shit into two seperate functions
+;; 0 SUCCESS
+;; 1-99 Lexer
+;; 100-199 Parser
+;; 
 ;; state is represented with functions
 (define* (scan-number port #:optional digits)
          (let ((char (lookahead-char port)))
@@ -161,10 +173,12 @@
 
 (define (scan-float port digits)
   (let ((char (lookahead-char port)))
-    (cond ((eof-object? char) (error "EOF object found in scan-float"))
+    (cond ((eof-object? char) 
+           (make-lox-lexer-error (make-error-message 'scan-float 'EARLY_EOF) port))
           ((digit? char) (scan-float port (cons (get-char port) digits)))
           ((and (period? (car digits)) (not (digit? char)))
-           (error "non digit found after period in float literal"))
+           (make-lox-lexer-error (make-error-message 'scan-float 'UNRECOGNIZED_CHAR)
+                                 port))
           (else (cons (make-token 'TOKEN_NUMBER
                                   (revstr digits)
                                   NIL
