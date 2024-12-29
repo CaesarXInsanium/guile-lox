@@ -1,12 +1,11 @@
 ;; COMENTARY
-(define-module (glox))
-
-(use-modules (ice-9 textual-ports)
-             (ice-9 readline))
-
-(use-modules (glox scanner)
-             (glox error)
-             (glox utils))
+(define-module (glox)
+               #:use-module (glox scanner)
+               #:use-module (glox error)
+               #:use-module (glox utils)
+               #:use-module (glox parser)
+               #:use-module (ice-9 textual-ports)
+               #:use-module (ice-9 readline))
 
 (define STDIN (current-input-port))
 (define STDOUT (current-output-port))
@@ -28,7 +27,9 @@
                                          #:unwind? #t
                                          #:unwind-for-type &lox-error))
   (display tokens)
-  (newline))
+  (newline)
+  (define ast (parse-tokens tokens))
+  (print-ast ast))
   
 (define prompt "> ")
 

@@ -33,6 +33,9 @@ Here I will track progress and ideas that I need to get my head in order
 - [ ] learn GitHub in order to do above
 - [X] reimplement the error system
 - [ ] update code to use the new error system
+- [ ] add support for unsupported chars. Handle unrecognized chars
+- [ ] add tests for lexer
+- [ ] rename stuff to more fit the idea of lexer
 
 ### Error Reporting
 

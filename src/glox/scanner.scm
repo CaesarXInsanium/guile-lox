@@ -129,6 +129,8 @@
 ;; must handle a situation where it finds a EOF marker
 ;; strings can not end with none terminated quotation mark
 ;; newlines must be escaped
+;; TODO add support for multiline strings
+;; TODO add support for backslashing
 (define* (scan-string port #:optional str)
          (let ((char (get-char port)))
            (cond ((eof-object? char) 
@@ -152,9 +154,6 @@
 ;; in order to support floats
 ;; on first call, char is guaranteed to be digit?
 ;; the only solution is to split this shit into two seperate functions
-;; 0 SUCCESS
-;; 1-99 Lexer
-;; 100-199 Parser
 ;; 
 ;; state is represented with functions
 (define* (scan-number port #:optional digits)
