@@ -17,7 +17,11 @@
                    (symbol->string sym)
                    sym))))
 
-(define error-reasons '(EARLY_EOF EARLY_NEWLINE))
+;; Error Codes are in Ranges
+(define error-reasons '((SUCCESS . 0) 
+                        (EARLY_EOF . 1) 
+                        (EARLY_NEWLINE . 2) 
+                        (UNSUPPORTED_CHAR . 3)))
 
 ;; assumes that sym is symbol, reason is also a symbol
 (define (make-error-message caller reason)
@@ -52,7 +56,7 @@
 (define (lexer-exception-handler ex)
   (let ((lex-port (lox-lexer-error-port ex)))
     (format (current-error-port)
-            "(Line/Column):(~s/~s), ftell: ~3s~%Error Message: ~20s"
+            "[~s/~s], ftell: ~3s~%Error Message: ~20s"
             (port-line lex-port)
             (port-column lex-port)
             (ftell lex-port)

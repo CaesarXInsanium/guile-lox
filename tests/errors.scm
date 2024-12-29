@@ -35,7 +35,7 @@
 (define n "Random Input String")
 ;; corrent building
 ;; (make message line lexeme)
-(define a (make-lox-lexer-error m  (open-input-string n)))
+(define a (make-lox-lexer-error m (open-input-string n)))
 ;; is subclass of lox-error
 (test-assert (lox-error? a))
 ;; correct error type

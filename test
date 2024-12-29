@@ -2,8 +2,9 @@
 echo "Running Tests"
 
 test_files=$(fd --extension scm --search-path tests)
-printf "Test Files: %s" test_files
-for test in $test_files; do
-  printf "Test: % s\n" $test
-  guile -L src -s $test
+
+for test in $test_files; do 
+  printf "Test: % s\n" $test 
+  guile -s $test 
 done
+printf "Test Files: %s" test_files

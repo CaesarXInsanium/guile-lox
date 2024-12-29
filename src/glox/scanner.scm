@@ -96,21 +96,22 @@
   (let ((char (get-char port)))
     (if (and start str)
       (cond ((eof-object? char) 
-             (raise-exception (make-lox-lexer-error "EOF found in scan-identifier"
-                                                    (ftell port)
-                                                    (get-line port)))) 
+             (raise-exception (make-lox-lexer-error (make-error-message 'scan-identifier
+                                                                        'EARLY_EOF)
+                                                    port))) 
             ((or (alpha-symbol? char) (alpha-numeric? char)) 
              (scan-identifier port start (cons char str)))
             ;; if it is whitespace, we should exclude the char, put it back
             ((or (single-char? char) (whitespace? char) (double? char)) 
              (cons (make-token (lox-keyword? (revstr str))
-                         (revstr str)
-                         NIL
-                         (port-line port))
+                               (revstr str)
+                               NIL
+                               (port-line port))
                    (begin (unget-char port char) 
                           (scan port))))
-            (else (raise-exception (make-lox-lexer-error "scan-identifier: "
-                                                         (ftell port)))))
+            (else (raise-exception (make-lox-lexer-error (make-error-message 'scan-identifier
+                                                                             'UNSUPPORTED_CHAR)
+                                                         port))))
       (scan-identifier port 0 (cons char NIL)))))
                                                   
 
@@ -146,7 +147,7 @@
 ;; state is represented with functions
 (define* (scan-number port #:optional digits)
          (let ((char (lookahead-char port)))
-          (cond ((eof-object? char) (error "EOF object found in scan-number"))
+          (cond ((eof-object? char) (raise-exception (make-lox "EOF object found in scan-number")))
                 ((not digits) (scan-number port (cons (get-char port) NIL)))
                 ((period? char) (scan-float port (cons (get-char port) 
                                                        digits)))

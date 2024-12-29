@@ -5,7 +5,8 @@
              (ice-9 readline))
 
 (use-modules (glox scanner)
-             (glox error))
+             (glox error)
+             (glox utils))
 
 (define STDIN (current-input-port))
 (define STDOUT (current-output-port))
@@ -25,7 +26,7 @@
   (define tokens (with-exception-handler lexer-exception-handler 
                                          (lambda () (scan source))
                                          #:unwind? #t
-                                         #:unwind-for-type &lox-lexer-error))
+                                         #:unwind-for-type &lox-error))
   (display tokens)
   (newline))
   
