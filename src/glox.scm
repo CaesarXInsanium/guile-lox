@@ -27,9 +27,9 @@
                                          #:unwind? #t
                                          #:unwind-for-type &lox-error))
   (display tokens)
-  (newline)
-  (define ast (parse-tokens tokens))
-  (print-ast ast))
+  (newline))
+  ;(define ast (parse-tokens tokens))
+  ;(print-ast ast))
   
 (define prompt "> ")
 

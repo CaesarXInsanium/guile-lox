@@ -91,11 +91,13 @@
                  (TOKEN_STRING . "TOKEN_STRING")
                  (TOKEN_NUMBER . "TOKEN_NUMBER")
 
+                 (TOKEN_TRUE . "TOKEN_TRUE")
+                 (TOKEN_FALSE . "TOKEN_FALSE")
+
                  ;; KEYWORDS
                  (TOKEN_AND . "TOKEN_AND")
                  (TOKEN_CLASS . "TOKEN_CLASS")
                  (TOKEN_ELSE . "TOKEN_ELSE")
-                 (TOKEN_FALSE . "TOKEN_FALSE")
                  (TOKEN_FUN . "TOKEN_FUN")
                  (TOKEN_FOR . "TOKEN_FOR")
                  (TOKEN_IF . "TOKEN_IF")
@@ -105,7 +107,6 @@
                  (TOKEN_RETURN . "TOKEN_RETURN")
                  (TOKEN_SUPER . "TOKEN_SUPER")
                  (TOKEN_THIS . "TOKEN_THIS")
-                 (TOKEN_TRUE . "TOKEN_TRUE")
                  (TOKEN_VAR . "TOKEN_VAR")
                  (TOKEN_WHILE . "TOKEN_WHILE")
 

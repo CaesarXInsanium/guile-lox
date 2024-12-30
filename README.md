@@ -14,13 +14,8 @@ The reason for making this repo is to make a fresh attempt at finding a
 motivation to program something anything really. I can look at my other implementations
 in order to get some idea on what sort of things I can work on.
 
-Most of the planning and ideas will be done inside of a notebook so
-yeah.
-
-I have moved this folder to a new location.
-
-That was a lie. The real limit was my intellectual capability. Also the fact that
-I had trouble be understanding the function `define-syntax`
+This repo is paused until I have finished reading the parsing section on the relevant
+book
 
 ## Progress
 
@@ -32,7 +27,7 @@ Here I will track progress and ideas that I need to get my head in order
 - [ ] move this list to GitHub issues
 - [ ] learn GitHub in order to do above
 - [X] reimplement the error system
-- [ ] update code to use the new error system
+- [x] update code to use the new error system
 - [ ] add support for unsupported chars. Handle unrecognized chars
 - [ ] add tests for lexer
 - [ ] rename stuff to more fit the idea of lexer

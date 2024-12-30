@@ -27,7 +27,7 @@
                         (EARLY_EOF . 1) 
                         (EARLY_NEWLINE . 2) 
                         (UNSUPPORTED_CHAR . 3)
-                        (UNRECOGNIZED_CHAR)))
+                        (UNRECOGNIZED_CHAR . 4)))
 
 ;; assumes that sym is symbol, reason is also a symbol
 (define (make-error-message caller reason)

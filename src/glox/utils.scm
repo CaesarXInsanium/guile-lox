@@ -3,7 +3,7 @@
   #:use-module (glox tokens)
   #:use-module (ice-9 textual-ports)
   #:export (revstr NIL reverse-string option? unwrap wrap some none none? some?
-                   get-all-line!))
+                   one-true?))
 
 (define NIL '())
 
@@ -35,3 +35,11 @@
 
 (define some? (lambda (x) (not (none? x))))
 
+(define (one-true? lst)
+  "Returns #t if and only if exactly one item in the list is true, otherwise returns #f."
+  (cond
+    ((null? lst) #f)
+    ((and (not (car lst))
+          (every not (cdr lst))) #f) ; No true values
+    ((and (car lst) (every not (cdr lst))) #t) ; Only first item is true
+    (else (one-true? (cdr lst))))) ; Check remaining list

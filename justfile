@@ -10,7 +10,7 @@ repl:
   ./bin/guile-lox
 
 test TEST:
-  @guile -L src -l tests/{{TEST}}.scm
+  @guile -L src -s tests/{{TEST}}.scm
 
 test-all:
   ./test
