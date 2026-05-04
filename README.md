@@ -10,58 +10,55 @@ documentclass: article
 ---
 # Purpose
 
-The reason for making this repo is to make a fresh attempt at finding a
-motivation to program something anything really. I can look at my other implementations
-in order to get some idea on what sort of things I can work on.
+New reason, to somehow find a way to learn things from the clox interpreter. I
+finished the AST traversal in java, but I realize that some things with that
+are not going to be easy going in Scheme/Guile.
 
-This repo is paused until I have finished reading the parsing section on the relevant
-book
 
-## Progress
+# Things to Work On
 
-Here I will track progress and ideas that I need to get my head in order
+- start working on the bytecode interpreter
+  -  start the bytecode tests 
+- start work on parser
+- implement the full lexer
+- remove references to Object member in token-record
+- move this list to GitHub issues
+- learn GitHub in order to do above
+- RE reimplement the error system. do this shit again since it made things
+  worse
+  - update code to use the new error system
+- add support for unsupported chars. Handle unrecognized chars
+- add tests for lexer
+- add tests for everything
+- rename stuff to more fit the idea of lexer
+- remove any unneccesary files. this will mean a just rework on build/test
+  system. scripts? make?
 
-- [ ] start work on parser
-- [ ] implement the full lexer : in progress
-- [ ] remove references to Object member in token-record
-- [ ] move this list to GitHub issues
-- [ ] learn GitHub in order to do above
-- [X] reimplement the error system
-- [x] update code to use the new error system
-- [ ] add support for unsupported chars. Handle unrecognized chars
-- [ ] add tests for lexer
-- [ ] rename stuff to more fit the idea of lexer
+# TODO Build System
 
-### Error Reporting
+## How I want this project to be invoked?
 
-~I have no clue on how to deal with this issue. Best case scenario is that Guile
-errors would be generated and returned with a proper backtrace.~
+Make seems to be the easiest, and most flexible but it also very complicated in
+some ways and very simple in others. I must not make it a true build system.
 
-Custom error types will be placed in the file `glox/error.scm`
+## How are the tests run?
 
-The Guile reference manual is telling me about custom exception types that can
-have different fields and they are all records. The interesting thing is that
-we can create new exception types based on other builtin exception types.
+I have a directory of tests that can be run, however the build system is what
+would be responsible for actually running them.
 
-The main idea here is that there are different classes of errors. There will be 
-lexical errors, parser, and code generation errors.
+There is also the issue that `srfi-64` generates a log file mess. But only in
+the directory from which the guile executable is being invoked.
 
-Write now I am focused on lexer errors.
+# TODO Error Reporting
 
-It needs to print the offending line.
+From here on out errors are values. Now how do I design an deal with this
+concept is a different story. Maybe something that takes inspiration from
+Haskell and Rust with options, error enums and panic attacks.
 
-show where the error starts and ends
+I will have to do a pseudocode files from here on out to make everything work
+out.
 
-#### Solution
-
-All errors related to Lexer are under the `lox-lexer-error` exception type.
-Same with Parser, `lox-parser-error`. Both are under `lox-error`. I am going to
-try and organize everything so that exceptions must be handled in some cases and
-cause a controlled crash in others. This crash should provide some information
-about the nature of the error.
-
-### Lexer
-
+# Lexer
 
 What needs to happen is characters are read from a stack and peeked at. Based on
 what characters are available we switch between different functions. We need to be
@@ -76,7 +73,10 @@ end of a port there is a `EOF` object.
 What if I just return the port? I get to preserve the state of the IO and also
 be able to give more information about the error got in the first place.
 
-#### Token Types
+This remains a state machine just like in the OOP/Imperative implementation
+except that the state is represented by function, to more exact function calls.
+
+# Token Types
 
 We can easily define a token record. It will only be a scheme record, in fact
 I can just copy and paste my old definition.
@@ -88,7 +88,7 @@ With this I can just grind a function that can determine if a string is a token
 keyword or an identifier. Which will then allow the creations of appropriate
 token-type enum and record.
 
-#### Scanner
+# TODO Scanner
 
 The state is stored in the GNU Guile runtime function stack.
 
@@ -127,12 +127,12 @@ if second period is found then raise Guile error as placeholder for proper error
 if period is found and then char is somehow not digit? and is alpha? or alpha-symbol? or whitespace?
 if found-period? is set and first elements of digits is period, then raise error
 
-### Parser
+# TODO Parser
 
 What I have is a list of tokens. In Java we need some hacky shit in order to get
 some metaprogramming with a program that outputs code that is then compiled again
 and is used in the parser.
 
-Scheme has a proper macro system so that sort of thing should not be neccesary.
+# Bytecode Generation
 
-### Code Generation
+I have decided that I want to create a byte code interpreter.
