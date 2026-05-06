@@ -17,9 +17,9 @@ are not going to be easy going in Scheme/Guile.
 
 # Things to Work On
 
+- start work on parser
 - start working on the bytecode interpreter
   -  start the bytecode tests 
-- start work on parser
 - implement the full lexer
 - remove references to Object member in token-record
 - move this list to GitHub issues
@@ -31,10 +31,12 @@ are not going to be easy going in Scheme/Guile.
 - add tests for lexer
 - add tests for everything
 - rename stuff to more fit the idea of lexer
-- remove any unneccesary files. this will mean a just rework on build/test
-  system. scripts? make?
+- move testing infrastrure down to tests directory with its own Makefile
 
-# TODO Build System
+# TODO Build System and Testing
+
+This is the section in which unnecessary files are removed. It is also how I am
+going to redo the build system and testing infrastructure.
 
 ## How I want this project to be invoked?
 
@@ -49,7 +51,30 @@ would be responsible for actually running them.
 There is also the issue that `srfi-64` generates a log file mess. But only in
 the directory from which the guile executable is being invoked.
 
-# TODO Error Reporting
+It has come to my knowledge that I can disable test logging with this bit of
+code.
+
+```scheme
+(set! test-log-to-file #f)
+```
+
+I remember that there are several things that need to be possible to do.
+
+- run the repl
+- pass a lox file to the interpreter
+- run all tests
+- run a particular test
+- run over a set of lox files to check for any error
+
+I have decided, the justfile will stay. It is merely a sequence of scripts that
+are joined into one.
+
+Maybe a more organized more coherent series of scripts might be want I want.
+
+If it is not enough then I will write a GNU Guile project management software
+for this.
+
+# Error Reporting
 
 From here on out errors are values. Now how do I design an deal with this
 concept is a different story. Maybe something that takes inspiration from
@@ -88,7 +113,7 @@ With this I can just grind a function that can determine if a string is a token
 keyword or an identifier. Which will then allow the creations of appropriate
 token-type enum and record.
 
-# TODO Scanner
+# Scanner
 
 The state is stored in the GNU Guile runtime function stack.
 
@@ -127,12 +152,11 @@ if second period is found then raise Guile error as placeholder for proper error
 if period is found and then char is somehow not digit? and is alpha? or alpha-symbol? or whitespace?
 if found-period? is set and first elements of digits is period, then raise error
 
-# TODO Parser
+# Parser
 
 What I have is a list of tokens. In Java we need some hacky shit in order to get
 some metaprogramming with a program that outputs code that is then compiled again
 and is used in the parser.
 
 # Bytecode Generation
-
-I have decided that I want to create a byte code interpreter.
+# Bytecode Interpretation

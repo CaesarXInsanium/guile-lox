@@ -1,7 +1,0 @@
-#!/usr/bin/bash
-
-# ... entry is default library load path
-# the guile-lox script will pretend that everything in src directory is copied to
-# Guile library installation directory
-export GUILE_LOAD_PATH=src:...
-./bin/guile-lox $@
