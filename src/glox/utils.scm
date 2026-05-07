@@ -5,6 +5,7 @@
   #:export (revstr NIL reverse-string option? unwrap wrap some none none? some?
                    one-true?))
 
+;; should not be here
 (define NIL '())
 
 ;; assumes a list of chars
@@ -14,9 +15,7 @@
 
 (define (reverse-string str) (list->string (reverse (string->list str))))
 
-
-;; assumes that fseek and ftell are valid
-
+;; wtf is this, option types
 (define option? list?)
 (define (unwrap x)
   (if (list? x)
@@ -35,11 +34,5 @@
 
 (define some? (lambda (x) (not (none? x))))
 
-(define (one-true? lst)
-  "Returns #t if and only if exactly one item in the list is true, otherwise returns #f."
-  (cond
-    ((null? lst) #f)
-    ((and (not (car lst))
-          (every not (cdr lst))) #f) ; No true values
-    ((and (car lst) (every not (cdr lst))) #t) ; Only first item is true
-    (else (one-true? (cdr lst))))) ; Check remaining list
+;; this already has an option in GNU Guile standard library
+;; it is called (define any ...)

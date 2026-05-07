@@ -5,16 +5,20 @@
                #:use-module (glox utils)
                #:use-module (glox parser)
                #:use-module (ice-9 textual-ports)
-               #:use-module (ice-9 readline))
+               #:use-module (ice-9 readline)
+               #:export (run-file))
 
-(define STDIN (current-input-port))
-(define STDOUT (current-output-port))
+(define stdin (current-input-port))
+(define stdout (current-output-port))
 
 
 ;; Takes a file path, loads the file and evaluates it.
+;; this can fail
+;; reasons for failure
+;; path-does-not-exist, not a file, no permission, not enough ram
 (define (run-file path)
   "Docs"
-  (format STDOUT "Running File: ~s~%" (canonicalize-path path))
+  (format stdout "Running File: ~s~%" (canonicalize-path path))
   (let* ((port (open path O_RDONLY))
          (source (get-string-all port)))
     (run (open-input-string source))))
