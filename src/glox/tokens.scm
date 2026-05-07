@@ -11,7 +11,6 @@
             make-token
             token-type
             token-lexeme
-            token-object
             token-line
             keywords
             lox-keyword?
@@ -22,11 +21,10 @@
 
 ;; simple type
 (define-record-type token
-  (make-token type lexeme object line)
+  (make-token type lexeme line)
   token?
   (type token-type)
   (lexeme token-lexeme)
-  (object token-object)
   (line token-line))
 
 ;; What sort of things would take to mean two tokens are equal or equivalent?
@@ -51,11 +49,10 @@
 
 (define token-printer 
   (lambda (record port)
-        (format port "Type: ~20a Line ~3d, Lexeme ~20s, Object ~20s ~%"
+        (format port "Type: ~20a Line ~3d, Lexeme ~20s"
                          (symbol->string (token-type record))
                          (token-line record) ;; will have to live with this horror
-                         (token-lexeme record)
-                         (token-object record))))
+                         (token-lexeme record))))
 
 (set-record-type-printer! token token-printer) 
                           
@@ -150,11 +147,11 @@
          (startofline (- pos col))
          (line (get-line port)))
     (seek port pos SEEK_SET)
-    (make-token 'TOKEN_ERROR (format #f "String: ~s" line) NIL (port-line port))))
+    (make-token 'TOKEN_ERROR (format #f "String: ~s" line) (port-line port))))
 
-;; should this function close the port? IDK, only with the REPL maybe?
+;; TODO should this function close the port? IDK, only with the REPL maybe?
 (define (make-eof-token port)
-  (make-token 'TOKEN_EOF "EOF" NIL (port-line port))) 
+  (make-token 'TOKEN_EOF "EOF" (port-line port))) 
 
 (define-syntax make-token-predicate
   (syntax-rules () 

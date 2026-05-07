@@ -20,12 +20,10 @@
   (if (char=? b #\=)
     (cons (make-token 'TOKEN_BANG_EQUAL 
                      (char->string a (get-char port)) 
-                     NIL 
                      (port-line port))
           (scan port))
     (cons (make-token 'TOKEN_BANG 
                       (char->string a) 
-                      NIL 
                       (port-line port))
           (scan port))))
 
@@ -34,38 +32,37 @@
   (if (char=? b #\=)
     (cons (make-token 'TOKEN_EQUAL_EQUAL 
                       (char->string a (get-char port)) 
-                      NIL 
                       (port-line port))
           (scan port))
           
-    (cons (make-token 'TOKEN_EQUAL (char->string a) NIL (port-line port))
+    (cons (make-token 'TOKEN_EQUAL (char->string a) (port-line port))
           (scan port))))
 
 ;; > < >= <=
 (define (scan-cmp port a b)
   (if (char=? b #\=)
-    (cond ((char=? a #\<) (cons (make-token 'TOKEN_LESS_EQUAL
-                                            (revstr (list a b))
-                                            NIL
-                                            (port-line port))
-                                (scan port)))
-          ((char=? a #\>) (cons (make-token 'TOKEN_GREATER_EQUAL
-                                            (revstr (list a b))
-                                            NIL
-                                            (port-line port))
-                                (scan port)))
+    (cond ((char=? a #\<) 
+           (cons (make-token 'TOKEN_LESS_EQUAL
+                             (revstr (list a b))
+                             (port-line port))
+                 (scan port)))
+          ((char=? a #\>) 
+           (cons (make-token 'TOKEN_GREATER_EQUAL
+                             (revstr (list a b))
+                             (port-line port))
+                 (scan port)))
           (else (make-lox-lexer-error (make-error-message 'scan-cmp 'UNREACHABLE)
                                       port)))
-    (cond ((char=? a #\<) (cons (make-token 'TOKEN_LESS
-                                            (revstr (list a))
-                                            NIL
-                                            (port-line port))
-                                (scan port)))
-          ((char=? a #\>) (cons (make-token 'TOKEN_GREATER
-                                            (revstr (list a))
-                                            NIL
-                                            (port-line port))
-                                (scan port)))
+    (cond ((char=? a #\<) 
+           (cons (make-token 'TOKEN_LESS
+                             (revstr (list a))
+                             (port-line port))
+                 (scan port)))
+          ((char=? a #\>) 
+           (cons (make-token 'TOKEN_GREATER
+                             (revstr (list a))
+                             (port-line port))
+                 (scan port)))
           (else (make-lox-lexer-error (make-error-message 'scan-cmp 'UNREACHABLE)
                                       port)))))
 
@@ -73,7 +70,6 @@
 (define (scan-slash port a b)
   (cons (make-token 'TOKEN_SLASH
                     (revstr (list a))
-                    NIL
                     (port-line port))
         (scan port)))
 
@@ -113,7 +109,6 @@
             ((or (single-char? char) (whitespace? char) (double? char)) 
              (cons (make-token (lox-keyword? (revstr str))
                                (revstr str)
-                               NIL
                                (port-line port))
                    (begin (unget-char port char) 
                           (scan port))))
@@ -141,7 +136,6 @@
                  ((and (quote-mark? char) str)
                   (cons (make-token 'TOKEN_STRING
                                     (revstr (cons char str))
-                                    NIL
                                     (port-line port))
                         (scan port)))
                  ;; continue scanning string
@@ -166,7 +160,6 @@
                                                        digits)))
                 (else (cons (make-token 'TOKEN_NUMBER
                                       (revstr digits)
-                                      NIL
                                       (port-line port))
                             (scan port))))))
 
@@ -180,7 +173,6 @@
                                  port))
           (else (cons (make-token 'TOKEN_NUMBER
                                   (revstr digits)
-                                  NIL
                                   (port-line port))
                       (scan port))))))
                   
@@ -196,7 +188,6 @@
           ;; tokens comprising of single char
           ((single-char? char) (cons (make-token (single-char? (get-char port))
                                                  (list->string (list char))
-                                                 NIL
                                                  (port-line port))
                                      (scan port)))
           ;; two character operators and comments

@@ -6,8 +6,8 @@
              (glox error))
 
 (test-begin "token")
-(define a (make-token 'TOKEN_NUMBER "69" NIL 0))
-(define b (make-token 'TOKEN_NUMBER "69" NIL 0))
+(define a (make-token 'TOKEN_NUMBER "69" 0))
+(define b (make-token 'TOKEN_NUMBER "69" 0))
 
 ;; sanity checks
 (test-assert (token? a))

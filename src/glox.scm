@@ -21,6 +21,7 @@
 
 ;; source is a port
 ;; This function will have to be updated when work on parser commences
+;; TODO this code sucks ass
 (define (run source)
   (define tokens (with-exception-handler lexer-exception-handler 
                                          (lambda () (scan source))
@@ -28,14 +29,14 @@
                                          #:unwind-for-type &lox-error))
   (display tokens)
   (newline))
-  ;(define ast (parse-tokens tokens))
-  ;(print-ast ast))
   
 (define prompt "> ")
 
 ;; TODO command history
+;; TODO figure out how much this shit sucks ass
 (define (run-repl)
   ;; activate-readline is very useful when inputing code into a REPL
+  ;; use the @ syntax to minimize import clutter
   (activate-readline)
   (define previous NIL)
   (let loop ((user-input (readline prompt)))
@@ -47,6 +48,7 @@
 
 ;; arguments, there is always at least one argument
 ;; TODO better argument processing
+;; TODO handle C-d and C-c keyboard interrupts
 (define (glox-main args)
 ;; entry point
   (display args)

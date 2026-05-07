@@ -6,9 +6,6 @@
                #:use-module (ice-9 exceptions)
                #:export (todo! make-error-message))
 
-;; Now the question becomes, should I use R6Rs valid scheme or GNU Guile?
-;; Answer GNU Guile
-
 ;; error type, denotes when a function should be worked on
 ;; this is a macro
 (define (todo! sym) 

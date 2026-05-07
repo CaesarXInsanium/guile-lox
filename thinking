@@ -1,0 +1,7 @@
+env file:
+  hold path to guile
+  rootdir
+  srcdir
+  testdir
+  sources list
+

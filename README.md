@@ -28,12 +28,14 @@ are not going to be easy going in Scheme/Guile.
   worse
   - update code to use the new error system
 - add support for unsupported chars. Handle unrecognized chars
-- add tests for lexer
 - add tests for everything
+  - lexer
+  - parser
+  - utils
 - rename stuff to more fit the idea of lexer
 - move testing infrastrure down to tests directory with its own Makefile
 
-# TODO Build System and Testing
+# Build System and Testing
 
 This is the section in which unnecessary files are removed. It is also how I am
 going to redo the build system and testing infrastructure.
