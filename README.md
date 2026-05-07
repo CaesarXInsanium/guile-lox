@@ -64,12 +64,6 @@ I remember that there are several things that need to be possible to do.
 - pass a lox file to the interpreter
 - run all tests
 - run a particular test
-- run over a set of lox files to check for any error
-
-I have decided, the justfile will stay. It is merely a sequence of scripts that
-are joined into one.
-
-Maybe a more organized more coherent series of scripts might be want I want.
 
 If it is not enough then I will write a GNU Guile project management software
 for this.
