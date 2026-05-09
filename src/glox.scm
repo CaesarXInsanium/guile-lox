@@ -6,16 +6,11 @@
                #:use-module (glox parser)
                #:use-module (ice-9 textual-ports)
                #:use-module (ice-9 readline)
-               #:export (run-file))
+               #:export (run-file glox-main))
 
 (define stdin (current-input-port))
 (define stdout (current-output-port))
 
-
-;; Takes a file path, loads the file and evaluates it.
-;; this can fail
-;; reasons for failure
-;; path-does-not-exist, not a file, no permission, not enough ram
 (define (run-file path)
   "Docs"
   (format stdout "Running File: ~s~%" (canonicalize-path path))
@@ -38,6 +33,8 @@
 
 ;; TODO command history
 ;; TODO figure out how much this shit sucks ass
+;; TODO how does this code get replaced or configured to store state over time?
+;; TODO handle C-d and C-c keyboard interrupts
 (define (run-repl)
   ;; activate-readline is very useful when inputing code into a REPL
   ;; use the @ syntax to minimize import clutter
@@ -52,15 +49,10 @@
 
 ;; arguments, there is always at least one argument
 ;; TODO better argument processing
-;; TODO handle C-d and C-c keyboard interrupts
 (define (glox-main args)
-;; entry point
-  (display args)
-  (newline)
   (if (< 1 (length args))
     ;; assumes that the argument given is a valid path
-    (run-file (list-ref args 1))
+    (if (file-exists? (list-ref args 1))
+      (run-file (list-ref args 1))
+      (error "File does not exists!"))
     (run-repl)))
-
-(export glox-main
-        run-file)

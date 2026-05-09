@@ -15,5 +15,5 @@
 ;; there exists a procedure to test token equality
 (test-assert (procedure? token=?))
 
-(test-assert (token=? tok (make-token 'TOKEN_STRING "\"string value\"" NIL 0)))
+(test-assert (token=? tok (make-token 'TOKEN_STRING "\"string value\"")))
 (test-end "scan-string")

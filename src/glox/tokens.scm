@@ -21,11 +21,17 @@
 
 ;; simple type
 (define-record-type token
-  (make-token type lexeme line)
+  (private-make-token type lexeme line column)
   token?
   (type token-type)
   (lexeme token-lexeme)
-  (line token-line))
+  (line token-line)
+  (column token-column))
+
+(define* (make-token type lexeme #:optional port)
+  (if port
+    (private-make-token type lexeme (port-line port) (port-column port))
+    (private-make-token type lexeme 0 0)))
 
 ;; What sort of things would take to mean two tokens are equal or equivalent?
 ;; same thing in memory can be done with eq?
@@ -49,9 +55,10 @@
 
 (define token-printer 
   (lambda (record port)
-        (format port "Type: ~20a Line ~3d, Lexeme ~20s"
+        (format port "~17a (~3d,~3d) ~20s~%"
                          (symbol->string (token-type record))
                          (token-line record) ;; will have to live with this horror
+                         (token-column record)
                          (token-lexeme record))))
 
 (set-record-type-printer! token token-printer) 
@@ -147,11 +154,11 @@
          (startofline (- pos col))
          (line (get-line port)))
     (seek port pos SEEK_SET)
-    (make-token 'TOKEN_ERROR (format #f "String: ~s" line) (port-line port))))
+    (make-token 'TOKEN_ERROR (format #f "String: ~s" line) port)))
 
 ;; TODO should this function close the port? IDK, only with the REPL maybe?
 (define (make-eof-token port)
-  (make-token 'TOKEN_EOF "EOF" (port-line port))) 
+  (make-token 'TOKEN_EOF "EOF" port)) 
 
 (define-syntax make-token-predicate
   (syntax-rules () 

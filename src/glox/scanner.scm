@@ -20,11 +20,11 @@
   (if (char=? b #\=)
     (cons (make-token 'TOKEN_BANG_EQUAL 
                      (char->string a (get-char port)) 
-                     (port-line port))
+                     port)
           (scan port))
     (cons (make-token 'TOKEN_BANG 
                       (char->string a) 
-                      (port-line port))
+                      port)
           (scan port))))
 
 ;; = or ==
@@ -32,10 +32,10 @@
   (if (char=? b #\=)
     (cons (make-token 'TOKEN_EQUAL_EQUAL 
                       (char->string a (get-char port)) 
-                      (port-line port))
+                      port)
           (scan port))
           
-    (cons (make-token 'TOKEN_EQUAL (char->string a) (port-line port))
+    (cons (make-token 'TOKEN_EQUAL (char->string a) port)
           (scan port))))
 
 ;; > < >= <=
@@ -44,24 +44,24 @@
     (cond ((char=? a #\<) 
            (cons (make-token 'TOKEN_LESS_EQUAL
                              (revstr (list a b))
-                             (port-line port))
+                             port)
                  (scan port)))
           ((char=? a #\>) 
            (cons (make-token 'TOKEN_GREATER_EQUAL
                              (revstr (list a b))
-                             (port-line port))
+                             port)
                  (scan port)))
           (else (make-lox-lexer-error (make-error-message 'scan-cmp 'UNREACHABLE)
                                       port)))
     (cond ((char=? a #\<) 
            (cons (make-token 'TOKEN_LESS
                              (revstr (list a))
-                             (port-line port))
+                             port)
                  (scan port)))
           ((char=? a #\>) 
            (cons (make-token 'TOKEN_GREATER
                              (revstr (list a))
-                             (port-line port))
+                             port)
                  (scan port)))
           (else (make-lox-lexer-error (make-error-message 'scan-cmp 'UNREACHABLE)
                                       port)))))
@@ -70,7 +70,7 @@
 (define (scan-slash port a b)
   (cons (make-token 'TOKEN_SLASH
                     (revstr (list a))
-                    (port-line port))
+                    port)
         (scan port)))
 
 ;; the char is from pair char which is member of double or single tokens
@@ -109,7 +109,7 @@
             ((or (single-char? char) (whitespace? char) (double? char)) 
              (cons (make-token (lox-keyword? (revstr str))
                                (revstr str)
-                               (port-line port))
+                               port)
                    (begin (unget-char port char) 
                           (scan port))))
             (else (raise-exception (make-lox-lexer-error (make-error-message 'scan-identifier
@@ -136,7 +136,7 @@
                  ((and (quote-mark? char) str)
                   (cons (make-token 'TOKEN_STRING
                                     (revstr (cons char str))
-                                    (port-line port))
+                                    port)
                         (scan port)))
                  ;; continue scanning string
                  ((and (not (quote-mark? char)) str)
@@ -160,7 +160,7 @@
                                                        digits)))
                 (else (cons (make-token 'TOKEN_NUMBER
                                       (revstr digits)
-                                      (port-line port))
+                                      port)
                             (scan port))))))
 
 (define (scan-float port digits)
@@ -173,7 +173,7 @@
                                  port))
           (else (cons (make-token 'TOKEN_NUMBER
                                   (revstr digits)
-                                  (port-line port))
+                                  port)
                       (scan port))))))
                   
 
@@ -188,7 +188,7 @@
           ;; tokens comprising of single char
           ((single-char? char) (cons (make-token (single-char? (get-char port))
                                                  (list->string (list char))
-                                                 (port-line port))
+                                                 port)
                                      (scan port)))
           ;; two character operators and comments
           ((double? char) (scan-op port))
