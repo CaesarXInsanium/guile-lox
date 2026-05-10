@@ -55,7 +55,7 @@
 
 (define token-printer 
   (lambda (record port)
-        (format port "~17a (~3d,~3d) ~20s"
+        (format port "{~17a (~3d,~3d) ~20s}"
                          (symbol->string (token-type record))
                          (token-line record) ;; will have to live with this horror
                          (token-column record)
@@ -149,12 +149,7 @@
 ;; Answer should be no. Error in tokens means that that this shit cant be parsed
 (define (make-error-token port)
   ;; i need to consume the char
-  (let* ((pos (ftell port))
-         (col (port-column port))
-         (startofline (- pos col))
-         (line (get-line port)))
-    (seek port pos SEEK_SET)
-    (make-token 'TOKEN_ERROR (format #f "String: ~s" line) port)))
+    (make-token 'TOKEN_ERROR (format #f "<~s>" (get-char port) port)))
 
 ;; TODO should this function close the port? IDK, only with the REPL maybe?
 (define (make-eof-token port)
