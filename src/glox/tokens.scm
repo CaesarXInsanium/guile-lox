@@ -55,7 +55,7 @@
 
 (define token-printer 
   (lambda (record port)
-        (format port "~17a (~3d,~3d) ~20s~%"
+        (format port "~17a (~3d,~3d) ~20s"
                          (symbol->string (token-type record))
                          (token-line record) ;; will have to live with this horror
                          (token-column record)

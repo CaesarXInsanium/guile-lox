@@ -22,12 +22,13 @@
 ;; This function will have to be updated when work on parser commences
 ;; TODO this code sucks ass
 (define (run source)
-  (define tokens (with-exception-handler lexer-exception-handler 
-                                         (lambda () (scan source))
-                                         #:unwind? #t
-                                         #:unwind-for-type &lox-error))
-  (display tokens)
-  (newline))
+  (for-each 
+    (lambda (x) 
+      (format #t "~s~%" x))
+    (with-exception-handler lexer-exception-handler 
+                          (lambda () (scan source))
+                          #:unwind? #t
+                          #:unwind-for-type &lox-error)))
   
 (define prompt "> ")
 
