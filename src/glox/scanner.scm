@@ -16,6 +16,7 @@
 ;; a is consumed
 ;; b is peeked
 ;; ! or !=
+;; this function does not do any errors. It just handles what is has found and moves on
 (define (scan-bang port a b)
   (if (char=? b #\=)
     (cons (make-token 'TOKEN_BANG_EQUAL 
@@ -51,8 +52,7 @@
                              (revstr (list a b))
                              port)
                  (scan port)))
-          (else (make-lox-lexer-error (make-error-message 'scan-cmp 'UNREACHABLE)
-                                      port)))
+          (else (make-lox-lexer-error (make-error-message 'scan-cmp 'UNREACHABLE)) port))
     (cond ((char=? a #\<) 
            (cons (make-token 'TOKEN_LESS
                              (revstr (list a))
@@ -202,4 +202,3 @@
           ((digit? char) (scan-number port))
           ;; handle unsupported characters
           (else (cons (make-error-token port) (scan port))))))
-

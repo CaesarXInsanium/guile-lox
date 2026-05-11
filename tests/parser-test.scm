@@ -17,7 +17,7 @@
 
 (test-begin "literal")
 (define string-one "1")
-(define token-one (make-token 'TOKEN_NUMBER "1" 0))
+(define token-one (make-token 'TOKEN_NUMBER "1"))
 (define A (make-literal token-one))
 (test-end "literal")
 

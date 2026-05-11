@@ -1,11 +1,14 @@
 ;; somehow I am going to place error handling functions in here.
 ;; create custom error types
+;; this whole file will soon be deprecated
 (define-module (glox error)
                #:use-module (glox char)
                #:use-module (glox utils)
                #:use-module (ice-9 exceptions)
                #:export (todo! make-error-message))
 
+(define (make-error-message caller reason)
+  (format #t "Caller: ~s~%Reason: ~s~%" caller reason))
 ;; error type, denotes when a function should be worked on
 ;; this is a macro
 (define (todo! sym) 
@@ -27,8 +30,6 @@
                         (UNRECOGNIZED_CHAR . 4)))
 
 ;; assumes that sym is symbol, reason is also a symbol
-(define (make-error-message caller reason)
-  (format #t "Caller: ~s~%Reason: ~s~%" caller reason))
 
 (define (explain-reason re) (todo! 'explain-reason))
 

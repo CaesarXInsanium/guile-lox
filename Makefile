@@ -1,4 +1,5 @@
 guile=/usr/bin/guile
+guileflags=--debug
 rootdir=$(shell pwd)
 srcdir=$(rootdir)/src
 testdir=$(rootdir)/tests

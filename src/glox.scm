@@ -4,6 +4,7 @@
                #:use-module (glox error)
                #:use-module (glox utils)
                #:use-module (glox parser)
+               #:use-module (glox panic)
                #:use-module (ice-9 textual-ports)
                #:use-module (ice-9 readline)
                #:export (run-file glox-main))
@@ -25,10 +26,7 @@
   (for-each 
     (lambda (x) 
       (format #t "~s~%" x))
-    (with-exception-handler lexer-exception-handler 
-                          (lambda () (scan source))
-                          #:unwind? #t
-                          #:unwind-for-type &lox-error)))
+    (scan source)))
   
 (define prompt "> ")
 
@@ -40,12 +38,12 @@
   ;; activate-readline is very useful when inputing code into a REPL
   ;; use the @ syntax to minimize import clutter
   (activate-readline)
-  (define previous NIL)
+  (define history NIL)
   (let loop ((user-input (readline prompt)))
     ;; TODO handle cases where user inputs certain Key Sequences
     (begin (run (open-input-string (if (eof-object? user-input)
                                      (exit) user-input)))
-           (set! previous user-input)
+           (set! history (cons user-input history))
            (loop (readline prompt)))))
 
 ;; arguments, there is always at least one argument
@@ -53,7 +51,8 @@
 (define (glox-main args)
   (if (< 1 (length args))
     ;; assumes that the argument given is a valid path
-    (if (file-exists? (list-ref args 1))
-      (run-file (list-ref args 1))
-      (error "File does not exists!"))
+    (let ((maybe-path (list-ref args 1)))
+      (if (file-exists? maybe-path)
+          (run-file maybe-path)
+          (panic! 'glox-main "File does not exist!" maybe-path)))
     (run-repl)))

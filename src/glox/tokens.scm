@@ -28,6 +28,7 @@
   (line token-line)
   (column token-column))
 
+;; optional argument is so that testing is less of a pain
 (define* (make-token type lexeme #:optional port)
   (if port
     (private-make-token type lexeme (port-line port) (port-column port))
@@ -55,11 +56,12 @@
 
 (define token-printer 
   (lambda (record port)
-        (format port "{~17a (~3d,~3d) ~20s}"
-                         (symbol->string (token-type record))
-                         (token-line record) ;; will have to live with this horror
-                         (token-column record)
-                         (token-lexeme record))))
+        (format port 
+                "<~17a (~3d,~3d) ~20s>"
+                (symbol->string (token-type record))
+                (token-line record) ;; will have to live with this horror
+                (token-column record)
+                (token-lexeme record))))
 
 (set-record-type-printer! token token-printer) 
                           
@@ -149,7 +151,7 @@
 ;; Answer should be no. Error in tokens means that that this shit cant be parsed
 (define (make-error-token port)
   ;; i need to consume the char
-    (make-token 'TOKEN_ERROR (format #f "<~s>" (get-char port) port)))
+    (make-token 'TOKEN_ERROR (format #f "< ~s >" (get-char port) port)))
 
 ;; TODO should this function close the port? IDK, only with the REPL maybe?
 (define (make-eof-token port)
