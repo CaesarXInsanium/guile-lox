@@ -1,7 +1,6 @@
 ;; COMENTARY
 (define-module (glox)
                #:use-module (glox scanner)
-               #:use-module (glox error)
                #:use-module (glox utils)
                #:use-module (glox parser)
                #:use-module (glox panic)

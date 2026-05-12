@@ -1,8 +1,8 @@
 (define-module (glox parser)
                #:use-module (glox utils)
-               #:use-module (glox error)
                #:use-module (srfi srfi-1)
                #:use-module (glox tokens)
+               #:use-module (glox panic)
                #:export (parse-tokens print-ast expr? 
                                       parser-token-pred
                                       make-unary unary? 

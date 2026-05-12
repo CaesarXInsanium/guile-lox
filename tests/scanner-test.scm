@@ -3,8 +3,7 @@
              (glox tokens)
              (glox utils)
              (srfi srfi-64)
-             (ice-9 textual-ports)
-             (glox error))
+             (ice-9 textual-ports))
 
 (test-begin "scan-string")
 (define sample-string "\"string value\"")

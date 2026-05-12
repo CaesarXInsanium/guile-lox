@@ -3,7 +3,6 @@
              (glox parser)
              (glox tokens)
              (glox utils)
-             (glox error)
              (srfi srfi-64)
              (ice-9 textual-ports))
 

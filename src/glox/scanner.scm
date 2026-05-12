@@ -3,7 +3,7 @@
   #:use-module (glox char)
   #:use-module (glox tokens)
   #:use-module (glox utils)
-  #:use-module (glox error)
+  #:use-module (glox panic)
   #:use-module (srfi srfi-18)
   #:export (scan scan-number scan-bang scan-cmp scan-slash scan-op
                  scan-eql scan-identifier scan-string))
@@ -52,7 +52,7 @@
                              (revstr (list a b))
                              port)
                  (scan port)))
-          (else (make-lox-lexer-error (make-error-message 'scan-cmp 'UNREACHABLE)) port))
+          (else (unreachable! 'scan-cmp))) 
     (cond ((char=? a #\<) 
            (cons (make-token 'TOKEN_LESS
                              (revstr (list a))
@@ -63,14 +63,11 @@
                              (revstr (list a))
                              port)
                  (scan port)))
-          (else (make-lox-lexer-error (make-error-message 'scan-cmp 'UNREACHABLE)
-                                      port)))))
+          (else (unreachable! 'scan-cmp)))))
 
 ;; division, a is guranteed / character
 (define (scan-slash port a b)
-  (cons (make-token 'TOKEN_SLASH
-                    (revstr (list a))
-                    port)
+  (cons (make-token 'TOKEN_SLASH (revstr (list a)) port)
         (scan port)))
 
 ;; the char is from pair char which is member of double or single tokens
@@ -84,25 +81,14 @@
           ((comment? a b) (ignore-line port scan))
           ((slash? a) (scan-slash port a b))
           ((eof-object? b) 
-           (raise-exception (make-lox-lexer-error (make-error-message 'scan-op 
-                                                                      'EARLY_EOF) 
-                                                  port)))
-          (else (raise-exception (make-lox-lexer-error (make-error-message 'scan-op
-                                                                           'UNRECOGNIZED_CHAR)
-                                                       port))))))
+           (todo! 'scan-op 'EARLY_EOF))
+          (else (todo! 'scan-op 'UNREACHABLE?))))) 
                                                                            
-
-;; (define (scan-number port #:key start))
-
-;; simply scan until we hit a whitespace, parens, braces, 
 ;; whitespace or not alpha-numeric?
 (define* (scan-identifier port #:optional start str)
   (let ((char (get-char port)))
     (if (and start str)
-      (cond ((eof-object? char) 
-             (raise-exception (make-lox-lexer-error (make-error-message 'scan-identifier
-                                                                        'EARLY_EOF)
-                                                    port))) 
+      (cond ((eof-object? char) (todo! 'scan-identifier 'EARLY_EOF)) 
             ((or (alpha-symbol? char) (alpha-numeric? char)) 
              (scan-identifier port start (cons char str)))
             ;; if it is whitespace, we should exclude the char, put it back
@@ -112,9 +98,7 @@
                                port)
                    (begin (unget-char port char) 
                           (scan port))))
-            (else (raise-exception (make-lox-lexer-error (make-error-message 'scan-identifier
-                                                                             'UNSUPPORTED_CHAR)
-                                                         port))))
+            (else (todo! 'scan-identifier 'unsupported-char)))
       (scan-identifier port 0 (cons char NIL)))))
                                                   
 
@@ -128,10 +112,7 @@
 ;; TODO add support for backslashing
 (define* (scan-string port #:optional str)
          (let ((char (get-char port)))
-           (cond ((eof-object? char) 
-                  (raise-exception (make-lox-lexer-error (make-error-message 'scan-string
-                                                                             'EARLY_EOF)
-                                                         port)))
+           (cond ((eof-object? char) (todo! 'scan-identifier 'EARLY_EOF)) 
                  ;; finds second quote mark and str is defined, create string
                  ((and (quote-mark? char) str)
                   (cons (make-token 'TOKEN_STRING
@@ -152,7 +133,7 @@
 ;; state is represented with functions
 (define* (scan-number port #:optional digits)
          (let ((char (lookahead-char port)))
-          (cond ((eof-object? char) (raise-exception (make-lox "EOF object found in scan-number")))
+          (cond ((eof-object? char) (todo! 'scan-identifier 'EARLY_EOF)) 
                 ((not digits) (scan-number port (cons (get-char port) NIL)))
                 ((period? char) (scan-float port (cons (get-char port) 
                                                        digits)))
@@ -165,12 +146,10 @@
 
 (define (scan-float port digits)
   (let ((char (lookahead-char port)))
-    (cond ((eof-object? char) 
-           (make-lox-lexer-error (make-error-message 'scan-float 'EARLY_EOF) port))
+    (cond ((eof-object? char) (todo! 'scan-float 'EARLY_EOF)) 
           ((digit? char) (scan-float port (cons (get-char port) digits)))
           ((and (period? (car digits)) (not (digit? char)))
-           (make-lox-lexer-error (make-error-message 'scan-float 'UNRECOGNIZED_CHAR)
-                                 port))
+           (todo! 'scan-float 'unrecognized-char char))
           (else (cons (make-token 'TOKEN_NUMBER
                                   (revstr digits)
                                   port)
@@ -184,12 +163,14 @@
 (define (scan port)
  ;; we need to peek here
   (let ((char (lookahead-char port)))
-    (cond ((eof-object? char) (cons (make-eof-token port) NIL)) 
+    (cond ((eof-object? char) 
+           (cons (make-eof-token port) NIL)) 
           ;; tokens comprising of single char
-          ((single-char? char) (cons (make-token (single-char? (get-char port))
-                                                 (list->string (list char))
-                                                 port)
-                                     (scan port)))
+          ((single-char? char) 
+           (cons (make-token (single-char? (get-char port))
+                             (list->string (list char))
+                             port)
+                 (scan port)))
           ;; two character operators and comments
           ((double? char) (scan-op port))
           ;; strings

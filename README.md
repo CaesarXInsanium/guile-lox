@@ -21,7 +21,8 @@ are not going to be easy going in Scheme/Guile.
 - start working on the bytecode interpreter
   -  start the bytecode tests 
 - implement the full lexer
-- remove references to Object member in token-record
+  - almost done. some edge case to handle still
+  - rename scanner to lexer
 - move this list to GitHub issues
 - learn GitHub in order to do above
 - RE reimplement the error system. do this shit again since it made things
