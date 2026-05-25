@@ -5,7 +5,6 @@
   #:export (revstr NIL reverse-string option? unwrap wrap some none none? some?
                    one-true?))
 
-;; should not be here
 (define NIL '())
 
 ;; assumes a list of chars
@@ -14,25 +13,3 @@
   (list->string (reverse lst)))
 
 (define (reverse-string str) (list->string (reverse (string->list str))))
-
-;; wtf is this, option types
-(define option? list?)
-(define (unwrap x)
-  (if (list? x)
-      (if (null? x)
-       (error "Empty Monad")
-       (list-ref x 0))
-      (error "Not a Monad")))
-(define (wrap x) (list x))
-
-(define (some x) (list x))
-(define (none) '())
-
-(define none?
-  (lambda (x)
-    (and (list? x) (null? x))))
-
-(define some? (lambda (x) (not (none? x))))
-
-;; this already has an option in GNU Guile standard library
-;; it is called (define any ...)

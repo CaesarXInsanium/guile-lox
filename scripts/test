@@ -1,10 +1,6 @@
 #!/usr/bin/bash
-
-echo "Running All the following tests"
-echo $@
-echo $GUILE_LOAD_PATH
-
+GUILE=/usr/bin/guile
 for test in $@
 do
-  guile -L src -s $test
+  $GUILE --debug --no-auto-compile -L src -s $test
 done

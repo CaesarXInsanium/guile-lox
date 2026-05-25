@@ -34,7 +34,7 @@ are not going to be easy going in Scheme/Guile.
   - parser
   - utils
 - rename stuff to more fit the idea of lexer
-- move testing infrastrure down to tests directory with its own Makefile
+- move testing infrastructure down to tests directory with its own Makefile
 
 # Build System and Testing
 
